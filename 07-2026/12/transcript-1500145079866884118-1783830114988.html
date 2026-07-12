@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transcript – #ticket-1800sms</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#313338;color:#dbdee1;font-family:'gg sans','Noto Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.375}
+    a{color:#00aff4;text-decoration:none}
+    /* ── Topbar ── */
+    .ch-topbar{display:flex;align-items:center;gap:12px;background:#2b2d31;padding:12px 20px;border-bottom:1px solid #1e1f22;position:sticky;top:0;z-index:10}
+    .ch-topbar-icon{font-size:22px;color:#80848e}
+    .ch-topbar-name{font-weight:700;font-size:16px;color:#f2f3f5}
+    .ch-topbar-topic{font-size:13px;color:#80848e;margin-left:8px;padding-left:8px;border-left:1px solid #3f4147;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* ── Info banner ── */
+    .ch-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:#1e1f22;border-bottom:1px solid #1e1f22}
+    .ch-info-cell{background:#2b2d31;padding:12px 20px}
+    .ch-info-label{font-size:11px;font-weight:700;color:#80848e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+    .ch-info-value{font-size:14px;color:#dbdee1}
+    /* ── Messages ── */
+    .ch-messages{padding:20px 0; overflow-wrap: anywhere;}
+    /* ── Date divider ── */
+    .ch-date-divider{display:flex;align-items:center;gap:8px;margin:20px 20px 8px;color:#80848e;font-size:12px;font-weight:600}
+    .ch-date-divider::before,.ch-date-divider::after{content:'';flex:1;height:1px;background:#3f4147}
+    /* ── Message group (new author) ── */
+    .ch-msg-group{display:flex;gap:16px;padding:2px 20px;margin-top:16px}
+    .ch-msg-group:hover{background:#2e3035}
+    /* ── Continuation (same author) ── */
+    .ch-msg-cont{display:flex;align-items:baseline;gap:16px;padding:1px 20px;padding-left:72px}
+    .ch-msg-cont:hover{background:#2e3035}
+    .ch-ts-mini{font-size:11px;color:transparent;min-width:36px;text-align:right;flex-shrink:0;transition:color .1s}
+    .ch-msg-cont:hover .ch-ts-mini{color:#80848e}
+    /* ── Avatar ── */
+    .ch-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:#fff;margin-top:2px;overflow:hidden}
+    /* ── Message body ── */
+    .ch-msg-body{flex:1;min-width:0}
+    .ch-msg-header{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+    .ch-author{font-weight:600;font-size:15px}
+    .ch-author.bot{color:#5865f2}
+    .ch-author.owner{color:#dbdee1}
+    .ch-author.staff{color:#57f287}
+    .ch-author.other{color:#dbdee1}
+    .ch-bot-badge{display:inline-block;background:#5865f2;color:#fff;font-size:10px;font-weight:500;padding:1px 4px;border-radius:3px;vertical-align:middle;margin-left:4px;line-height:1.4}
+    .ch-ts{font-size:12px;color:#80848e;font-weight:400}
+    .ch-msg-text{color:#dbdee1;font-size:15px;line-height:1.4}
+    /* ── Markdown & Mentions ── */
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    u { text-decoration: underline; text-underline-offset: 2px; }
+    del { text-decoration: line-through; }
+    code { background: #2b2d31; font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; font-size: 13.5px; padding: 0.2em; border-radius: 3px; }
+    pre { background: #2b2d31; border: 1px solid #1e1f22; padding: 8px; border-radius: 4px; margin: 6px 0; overflow-x: auto; }
+    pre code { background: transparent; padding: 0; border-radius: 0; }
+    .ch-mention { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 3px; border-radius: 3px; font-weight: 500; cursor: pointer; transition: background 0.1s; }
+    .ch-mention:hover { background: #5865f2; color: #fff; }
+    .ch-author[title] { cursor: pointer; }
+    .ch-author[title]:hover { text-decoration: underline; }
+    /* ── Embeds & Attachments ── */
+    .ch-embed {background: #2b2d31; border-left: 4px solid #202225; border-radius: 4px; padding: 12px; margin-top: 8px; max-width: 520px;}
+    .ch-embed-title {font-weight: 600; margin-bottom: 4px;}
+    .ch-embed-desc {font-size: 14px; margin-bottom: 8px; color:#dbdee1;}
+    .ch-embed-fields {display: flex; flex-wrap: wrap; gap: 8px;}
+    .ch-embed-field {flex: 1 1 100%;}
+    .ch-embed-field.inline {flex: 1 1 calc(33% - 8px); min-width: 150px;}
+    .ch-embed-field-name {font-size: 13px; font-weight: 600; color: #dbdee1; margin-bottom: 2px;}
+    .ch-embed-field-value {font-size: 13px; color: #dbdee1;}
+    .ch-attachment {margin-top: 8px;}
+    .ch-attachment img {max-width: 400px; max-height: 300px; border-radius: 4px;}
+    /* ── Footer ── */
+    .ch-footer{padding:20px;text-align:center;font-size:12px;color:#80848e;border-top:1px solid #3f4147;margin-top:12px}
+    .ch-footer strong{color:#dbdee1}
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; display: flex; }
+    .modal-card { background: #232428; width: 340px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.24); overflow: hidden; position: relative; transform: scale(0.95); transition: transform 0.2s; }
+    .modal-overlay.open .modal-card { transform: scale(1); }
+    .modal-banner { height: 105px; background: #5865f2; }
+    .modal-avatar-wrapper { position: absolute; top: 60px; left: 16px; background: #232428; padding: 6px; border-radius: 50%; }
+    .modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: #1e1f22; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; }
+    .modal-avatar img { width: 100%; height: 100%; display: none; object-fit: cover; }
+    .modal-content-p { padding: 50px 16px 16px 16px; color: #dbdee1; }
+    .modal-username { font-size: 20px; font-weight: 700; color: #f2f3f5; word-break: break-all; }
+    .modal-tag { font-size: 14px; color: #b5bac1; margin-bottom: 12px; }
+    .modal-divider { height: 1px; background: #3f4147; margin: 12px 0; }
+    .modal-section h3 { font-size: 12px; font-weight: 700; color: #f2f3f5; text-transform: uppercase; margin-bottom: 6px; }
+    .modal-section p { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="ch-topbar">
+    <span class="ch-topbar-icon">#</span>
+    <span class="ch-topbar-name">ticket-1800sms</span>
+    <span class="ch-topbar-topic">Unknown &mdash; Ticket transcript</span>
+  </div>
+
+  <div class="ch-info">
+    <div class="ch-info-cell"><div class="ch-info-label">Tipo Ticket</div><div class="ch-info-value">Unknown</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Utente</div><div class="ch-info-value">Unknown (synced)</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Staff (Claim)</div><div class="ch-info-value">—</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso da</div><div class="ch-info-value">4r9c</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Aperto il</div><div class="ch-info-value">02/05/2026, 17:40:58</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso il</div><div class="ch-info-value">12/07/2026, 07:21:54</div></div>
+  </div>
+
+  <div class="ch-messages">
+    <div class="ch-date-divider"><span>sabato 2 maggio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Tickets v2#5105" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1325579039888511056/0475b9e371572541147b21c4dfc04c77.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Tickets v2', 'Tickets v2#5105', '1325579039888511056', 'https://cdn.discordapp.com/avatars/1325579039888511056/0475b9e371572541147b21c4dfc04c77.png?size=128', '#5865f2', 'T')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Tickets v2', 'Tickets v2#5105', '1325579039888511056', 'https://cdn.discordapp.com/avatars/1325579039888511056/0475b9e371572541147b21c4dfc04c77.png?size=128', '#5865f2', 'T')">Tickets v2<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="02/05/2026, 17:40:58">17:40</span>
+            </div>
+            <div class="ch-msg-text">-# ||@everyone||</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 17:40:59">17:40</span>
+          <div class="ch-msg-text"><div class="ch-embed" style="border-left-color: #202225"><div class="ch-embed-desc">.</div></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 17:41:26">17:41</span>
+            </div>
+            <div class="ch-msg-text">hello im gonna buy the basic emu tdy for my 35t</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 17:42:01">17:42</span>
+          <div class="ch-msg-text">i upgraded to windows 11 this week for school i can still use my dma right?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 17:42:22">17:42</span>
+            </div>
+            <div class="ch-msg-text">Yea</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 17:42:31">17:42</span>
+            </div>
+            <div class="ch-msg-text">okay i was just tryna make sure</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 17:43:16">17:43</span>
+            </div>
+            <div class="ch-msg-text">Okay we accept PayPal crypto and credit card</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 17:43:33">17:43</span>
+            </div>
+            <div class="ch-msg-text">i can do credit card? im watchin yalls yt vid rn ts hard</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 17:43:54">17:43</span>
+            </div>
+            <div class="ch-msg-text">Yes <span class="ch-mention" onclick="showModal('g22<em>24', 'g22</em>24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">@g22_24</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 17:44:22">17:44</span>
+          <div class="ch-msg-text">But you knows that the basic emu doesn’t support fortnite ?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 17:44:51">17:44</span>
+            </div>
+            <div class="ch-msg-text">i know i play fivem n cod wit my hbs most the time</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 17:45:26">17:45</span>
+          <div class="ch-msg-text">yall can do anydesk i lwk forgot how to flash ts after i buy</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 17:46:29">17:46</span>
+            </div>
+            <div class="ch-msg-text">Ok then it works</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 17:46:36">17:46</span>
+          <div class="ch-msg-text">Yes</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 17:46:45">17:46</span>
+          <div class="ch-msg-text">No problem</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 17:46:48">17:46</span>
+            </div>
+            <div class="ch-msg-text">bet bro i pr8 it</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 17:47:05">17:47</span>
+          <div class="ch-msg-text">thank you lmk when i can send the pape</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 17:50:17">17:50</span>
+          <div class="ch-msg-text"><div class="ch-attachment"><img src="https://cdn.discordapp.com/attachments/1500145079866884118/1500147424461852824/IMG_3402.jpg?ex=6a545269&amp;is=6a5300e9&amp;hm=fd4d37580944113d073741d7d6fffb034c0ad16c3ff4aa929b8067699b4828f7&amp;" alt="Image" loading="lazy"></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 17:55:21">17:55</span>
+            </div>
+            <div class="ch-msg-text">Yeah pls wait <span class="ch-mention" onclick="showModal('g22<em>24', 'g22</em>24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">@g22_24</span> to Create a credit card invoice</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="02/05/2026, 18:05:51">18:05</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">@1800sms</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:05:59">18:05</span>
+          <div class="ch-msg-text">send me your email</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:06:05">18:06</span>
+          <div class="ch-msg-text">paypal email</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:06:42">18:06</span>
+          <div class="ch-msg-text">and what fw you wanna buy</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:07:12">18:07</span>
+            </div>
+            <div class="ch-msg-text">the basic emu and ethanpatknox2021@gmail.com</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="02/05/2026, 18:11:25">18:11</span>
+            </div>
+            <div class="ch-msg-text">https://www.paypal.com/invoice/p/#INV2-TQH6-SC2L-RDT8-WH2V</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:11:30">18:11</span>
+          <div class="ch-msg-text">here you can pay</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:12:51">18:12</span>
+            </div>
+            <div class="ch-msg-text">sent</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:13:02">18:13</span>
+          <div class="ch-msg-text"><div class="ch-attachment"><img src="https://cdn.discordapp.com/attachments/1500145079866884118/1500153150768676974/IMG_3403.png?ex=6a5457be&amp;is=6a53063e&amp;hm=0993047a9b1f8af61cfc18d27160c016cbc1ab8b547e56fc3324bd3871d6ac17&amp;" alt="Image" loading="lazy"></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="02/05/2026, 18:13:16">18:13</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 18:13:29">18:13</span>
+            </div>
+            <div class="ch-msg-text">Perfect</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:13:43">18:13</span>
+          <div class="ch-msg-text">Send dna pls <span class="ch-mention" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">@1800sms</span></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:13:55">18:13</span>
+            </div>
+            <div class="ch-msg-text">anydesk code?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:14:07">18:14</span>
+          <div class="ch-msg-text">bet let me start up computer</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 18:14:14">18:14</span>
+            </div>
+            <div class="ch-msg-text">Ok</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:14:17">18:14</span>
+            </div>
+            <div class="ch-msg-text">captain dma 35t</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 18:14:43">18:14</span>
+            </div>
+            <div class="ch-msg-text">Send The dna then once the build is ready I can flash on anydesk</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:16:40">18:16</span>
+            </div>
+            <div class="ch-msg-text">what dna???</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 18:17:00">18:17</span>
+            </div>
+            <div class="ch-msg-text">Of dma</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:18:09">18:18</span>
+          <div class="ch-msg-text">https://github.com/kilmu1337/DMA-DNA-ID<div class="ch-embed" style="border-left-color: #1e2327"><div class="ch-embed-title">GitHub - kilmu1337/DMA-DNA-ID: Get the DNA ID of all DMA boards wit...</div><div class="ch-embed-desc">Get the DNA ID of all DMA boards with one click. Contribute to kilmu1337/DMA-DNA-ID development by creating an account on GitHub.</div></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:18:22">18:18</span>
+            </div>
+            <div class="ch-msg-text">igh bet</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:18:29">18:18</span>
+          <div class="ch-msg-text">i forgot what port to put the plug in lwk</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 18:18:30">18:18</span>
+            </div>
+            <div class="ch-msg-text">Download on second pc</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:18:35">18:18</span>
+            </div>
+            <div class="ch-msg-text">left or right??</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 18:18:38">18:18</span>
+            </div>
+            <div class="ch-msg-text">Jtag</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:18:53">18:18</span>
+            </div>
+            <div class="ch-msg-text">bet</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 18:19:16">18:19</span>
+            </div>
+            <div class="ch-msg-text">Should be the one close to your mobo</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:32:00">18:32</span>
+            </div>
+            <div class="ch-msg-text">which one i open?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:32:05">18:32</span>
+          <div class="ch-msg-text">dna id?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 18:34:34">18:34</span>
+            </div>
+            <div class="ch-msg-text">Yes</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 18:34:42">18:34</span>
+            </div>
+            <div class="ch-msg-text">ok</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 18:35:03">18:35</span>
+            </div>
+            <div class="ch-msg-text">Open the 4 .bat files until one gives an output</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:35:09">18:35</span>
+          <div class="ch-msg-text">A long output</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 18:35:13">18:35</span>
+          <div class="ch-msg-text">Then send it here</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 19:04:48">19:04</span>
+            </div>
+            <div class="ch-msg-text">i click on the 35t and this is what it says</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 19:19:59">19:19</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 19:21:07">19:21</span>
+          <div class="ch-msg-text">my cords are 3.0</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 19:31:57">19:31</span>
+          <div class="ch-msg-text">C:\Users\etanc\Downloads\DMA-DNA-ID-main\DMA-DNA-ID-main\DNA<em>ID&gt;openocd -f init</em>232_35t.cfg<br>Open On-Chip Debugger 0.10.0+dev-01289-g8833c889 (2020-06-26-21:35)<br>Licensed under GNU GPL v2<br>For bug reports, read<br>        http://openocd.org/doc/doxygen/bugs.html<br>DEPRECATED! use &#039;adapter driver&#039; not &#039;interface&#039;<br>Info : auto-selecting first available session transport &quot;jtag&quot;. To override use &#039;transport select &lt;transport&gt;&#039;.<br>DEPRECATED! use &#039;adapter speed&#039; not &#039;adapter_khz&#039;<br>Error: libusb<em>open() failed with LIBUSB</em>ERROR<em>NOT</em>SUPPORTED<br>Error: libusb<em>open() failed with LIBUSB</em>ERROR<em>NOT</em>FOUND<br>Error: no device found<br>Error: unable to open ftdi device with vid 0403, pid 6011, description &#039;<em>&#039;, serial &#039;</em>&#039; at bus location &#039;*&#039;<br><br><br>C:\Users\etanc\Downloads\DMA-DNA-ID-main\DMA-DNA-ID-main\DNA_ID&gt;pause<br>Press any key to continue . . .</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 19:32:22">19:32</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('g22<em>24', 'g22</em>24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">@g22_24</span> <span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="02/05/2026, 20:27:24">20:27</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 20:27:35">20:27</span>
+          <div class="ch-msg-text">wait for him</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="02/05/2026, 20:48:47">20:48</span>
+            </div>
+            <div class="ch-msg-text">okay</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="02/05/2026, 23:31:10">23:31</span>
+            </div>
+            <div class="ch-msg-text">I was sleeping now I sent the dna to the dev</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 23:33:10">23:33</span>
+          <div class="ch-msg-text">Bro</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 23:33:13">23:33</span>
+          <div class="ch-msg-text">That not. The dna</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/05/2026, 23:33:32">23:33</span>
+          <div class="ch-msg-text">Soon I can get on pc and help w anydesk</div>
+        </div><div class="ch-date-divider"><span>domenica 3 maggio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 01:09:40">01:09</span>
+            </div>
+            <div class="ch-msg-text">Lmk when ur on</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="03/05/2026, 01:10:08">01:10</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">@1800sms</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 01:20:55">01:20</span>
+            </div>
+            <div class="ch-msg-text">yooo</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:20:57">01:20</span>
+          <div class="ch-msg-text">i&#039;m back</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:21:03">01:21</span>
+          <div class="ch-msg-text">look what i had to pick up</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:21:25">01:21</span>
+          <div class="ch-msg-text"><div class="ch-attachment"><img src="https://cdn.discordapp.com/attachments/1500145079866884118/1500260958113890404/IMG_3405.jpg?ex=6a541365&amp;is=6a52c1e5&amp;hm=92274be998c5ca5c1bc1c3ffe60e091780db0f3984400e02cb4aaafa923047de&amp;" alt="Image" loading="lazy"></div></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:21:29">01:21</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('g22<em>24', 'g22</em>24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">@g22_24</span> <span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:21:37">01:21</span>
+          <div class="ch-msg-text">don&#039;t go to sleep on me again 😥</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 01:21:44">01:21</span>
+            </div>
+            <div class="ch-msg-text">no chill haha</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:21:48">01:21</span>
+          <div class="ch-msg-text">send second pc anydesk</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:21:54">01:21</span>
+          <div class="ch-msg-text">w jtag port plugged in</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 01:24:59">01:24</span>
+            </div>
+            <div class="ch-msg-text">bet</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:25:00">01:25</span>
+          <div class="ch-msg-text">yes</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:25:05">01:25</span>
+          <div class="ch-msg-text">everything in srry i&#039;m on apex rn</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 01:25:34">01:25</span>
+          <div class="ch-msg-text">1555201940</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="03/05/2026, 01:25:57">01:25</span>
+            </div>
+            <div class="ch-msg-text">wow thats crazy</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 01:27:17">01:27</span>
+            </div>
+            <div class="ch-msg-text">i got a plug</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="03/05/2026, 01:30:15">01:30</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 01:30:49">01:30</span>
+            </div>
+            <div class="ch-msg-text">lmk when yall are on</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 01:54:20">01:54</span>
+            </div>
+            <div class="ch-msg-text">accept</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 01:56:30">01:56</span>
+            </div>
+            <div class="ch-msg-text">try agian</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 02:09:11">02:09</span>
+          <div class="ch-msg-text">bro idk whats happening with my shi</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 02:09:25">02:09</span>
+          <div class="ch-msg-text">do i have to disable virtualization n vtd shi on my 2nd pc too??</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 02:09:32">02:09</span>
+            </div>
+            <div class="ch-msg-text">are u sure is plugged in jtag?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 02:09:38">02:09</span>
+            </div>
+            <div class="ch-msg-text">look</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 02:09:41">02:09</span>
+            </div>
+            <div class="ch-msg-text">and connected to thew second pc with the cable</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 02:10:11">02:10</span>
+            </div>
+            <div class="ch-msg-text"><div class="ch-attachment"><a href="https://cdn.discordapp.com/attachments/1500145079866884118/1500273227891605534/79945619301__EFB0ACCA-3A00-4B8E-AC9C-464DE7481CC8.mov?ex=6a541ed3&amp;is=6a52cd53&amp;hm=e557daa2c6ac8260e0781506835c9760b3cc3f5a4e70d71e6e383d05c008134a&amp;" target="_blank" rel="noopener noreferrer">📄 79945619301__EFB0ACCA-3A00-4B8E-AC9C-464DE7481CC8.mov</a></div></div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 02:25:42">02:25</span>
+            </div>
+            <div class="ch-msg-text">mh ok</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 02:26:09">02:26</span>
+          <div class="ch-msg-text">try disconnect and reconnect it</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 02:26:16">02:26</span>
+            </div>
+            <div class="ch-msg-text">thats what i was gonna do</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 02:26:22">02:26</span>
+          <div class="ch-msg-text">i was gonna turn everything off then do it</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 02:26:34">02:26</span>
+            </div>
+            <div class="ch-msg-text">ok</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 02:26:42">02:26</span>
+          <div class="ch-msg-text">also have u used the cabler that came with your dma?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 02:27:24">02:27</span>
+            </div>
+            <div class="ch-msg-text">yeah</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 02:48:55">02:48</span>
+          <div class="ch-msg-text">i had device encryption on im a goof</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 02:49:17">02:49</span>
+            </div>
+            <div class="ch-msg-text">oh</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 02:49:29">02:49</span>
+          <div class="ch-msg-text">run the .bats again once it gives the dna send</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 02:49:30">02:49</span>
+            </div>
+            <div class="ch-msg-text">i had that bitlocker shi</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 02:49:32">02:49</span>
+          <div class="ch-msg-text">bet</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 02:49:44">02:49</span>
+            </div>
+            <div class="ch-msg-text">👍</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 04:25:20">04:25</span>
+            </div>
+            <div class="ch-msg-text">Yall dont do refunds?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 04:25:28">04:25</span>
+          <div class="ch-msg-text">im srry yall idk what to do</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 04:25:35">04:25</span>
+          <div class="ch-msg-text">ive been at this for 6 hours</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 04:25:43">04:25</span>
+          <div class="ch-msg-text">3</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 05:37:13">05:37</span>
+            </div>
+            <div class="ch-msg-text">no</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 05:37:29">05:37</span>
+          <div class="ch-msg-text">if i dont have your dna</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 05:37:45">05:37</span>
+          <div class="ch-msg-text">the dev cant make your build</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 06:14:24">06:14</span>
+            </div>
+            <div class="ch-msg-text">damn i dont know how to fix bru</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 07:55:55">07:55</span>
+            </div>
+            <div class="ch-msg-text">idk man</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 07:56:08">07:56</span>
+          <div class="ch-msg-text">maybe i can do something special for u</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 07:56:12">07:56</span>
+          <div class="ch-msg-text">i asked the dev</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 10:01:33">10:01</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">@1800sms</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 10:01:50">10:01</span>
+          <div class="ch-msg-text">what cpu u have?</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 10:01:56">10:01</span>
+          <div class="ch-msg-text">maybe i have found a fix</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 16:32:13">16:32</span>
+            </div>
+            <div class="ch-msg-text">intel i7</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 17:46:41">17:46</span>
+          <div class="ch-msg-text">it lowk might be my bios settings</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 17:46:46">17:46</span>
+          <div class="ch-msg-text">if not your fix</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 18:12:09">18:12</span>
+            </div>
+            <div class="ch-msg-text">Which gen</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 18:14:21">18:14</span>
+            </div>
+            <div class="ch-msg-text">10th</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 18:14:23">18:14</span>
+          <div class="ch-msg-text">gen</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 18:14:36">18:14</span>
+          <div class="ch-msg-text">gen 5 switchie</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="03/05/2026, 18:17:19">18:17</span>
+            </div>
+            <div class="ch-msg-text">Ok once dev is online he can fix</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="03/05/2026, 19:14:54">19:14</span>
+            </div>
+            <div class="ch-msg-text">ok bet</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="03/05/2026, 23:35:19">23:35</span>
+          <div class="ch-msg-text">lmk</div>
+        </div><div class="ch-date-divider"><span>lunedì 4 maggio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="pinso45v" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/embed/avatars/0.png'); background-size: cover; cursor: pointer;" onclick="showModal('pinso45v', 'pinso45v', '1113880446451851274', 'https://cdn.discordapp.com/embed/avatars/0.png', '#4caf50', 'P')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('pinso45v', 'pinso45v', '1113880446451851274', 'https://cdn.discordapp.com/embed/avatars/0.png', '#4caf50', 'P')">pinso45v</span>
+              <span class="ch-ts" title="04/05/2026, 07:52:49">07:52</span>
+            </div>
+            <div class="ch-msg-text">https://cdn.discordapp.com/attachments/1389026926232076340/1389027371142877335/pcileech<em>squirrel</em>top.bin?ex=69f92e0c&amp;is=69f7dc8c&amp;hm=d4413c041132fef553a28694a839f3cf606d840ca889f4219b93248a97c2a983&amp;</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/05/2026, 07:52:53">07:52</span>
+          <div class="ch-msg-text">flash this pls</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="04/05/2026, 18:03:10">18:03</span>
+            </div>
+            <div class="ch-msg-text">okay</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/05/2026, 18:03:16">18:03</span>
+          <div class="ch-msg-text">ima be home soon</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/05/2026, 23:08:39">23:08</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/05/2026, 23:54:34">23:54</span>
+          <div class="ch-msg-text">i need help flashing</div>
+        </div><div class="ch-date-divider"><span>martedì 5 maggio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 00:33:06">00:33</span>
+            </div>
+            <div class="ch-msg-text">fw</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 00:37:29">00:37</span>
+            </div>
+            <div class="ch-msg-text">send anydesk</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:37:33">00:37</span>
+          <div class="ch-msg-text">of second pc</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:37:36">00:37</span>
+          <div class="ch-msg-text">and jtag plugged in</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 00:51:06">00:51</span>
+            </div>
+            <div class="ch-msg-text">okay</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 00:51:14">00:51</span>
+            </div>
+            <div class="ch-msg-text">I’m not on pc rn</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:51:26">00:51</span>
+          <div class="ch-msg-text">Coming in some minutes</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 00:51:27">00:51</span>
+            </div>
+            <div class="ch-msg-text">just lmk im doing everything rq</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 00:51:28">00:51</span>
+            </div>
+            <div class="ch-msg-text">Like 20</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 00:51:30">00:51</span>
+            </div>
+            <div class="ch-msg-text">okay bet</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 00:51:37">00:51</span>
+            </div>
+            <div class="ch-msg-text">I can tell u from here te</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:51:40">00:51</span>
+          <div class="ch-msg-text">Btw</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:51:42">00:51</span>
+          <div class="ch-msg-text">It’s super easy</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:51:51">00:51</span>
+          <div class="ch-msg-text">Download from GitHub kilmu dma tool</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:52:12">00:52</span>
+          <div class="ch-msg-text">Then go into the flash firmware section select your dmacard on top if 35t 75t etc</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:52:33">00:52</span>
+          <div class="ch-msg-text">And select the firmware from file explorer from the dma tool</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:52:36">00:52</span>
+          <div class="ch-msg-text">And click flash</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 00:57:04">00:57</span>
+            </div>
+            <div class="ch-msg-text">okay bet can  you send github link imma try first by myself it dont work imma come back when you on</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 00:57:16">00:57</span>
+            </div>
+            <div class="ch-msg-text">Ok I’ll send</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:59:11">00:59</span>
+          <div class="ch-msg-text">https://github.com/kilmu1337/DMA-Tool<div class="ch-embed" style="border-left-color: #1e2327"><div class="ch-embed-title">GitHub - kilmu1337/DMA-Tool: A modern Electron-based desktop applic...</div><div class="ch-embed-desc">A modern Electron-based desktop application providing a sleek, fluent design interface for executing OpenOCD and PCIleech commands. - kilmu1337/DMA-Tool</div></div></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 00:59:18">00:59</span>
+          <div class="ch-msg-text">This one u can use</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:07:19">01:07</span>
+            </div>
+            <div class="ch-msg-text"><div class="ch-attachment"><img src="https://cdn.discordapp.com/attachments/1500145079866884118/1500982181634248846/image.png?ex=6a541017&amp;is=6a52be97&amp;hm=2b1362e3855990cd301cd55d73e5d08d854d03ae488df42d2c2785273b79efd8&amp;" alt="Image" loading="lazy"></div></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:07:21">01:07</span>
+          <div class="ch-msg-text">is my dma connected now?</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:11:45">01:11</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:11:58">01:11</span>
+            </div>
+            <div class="ch-msg-text">Yes</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:12:02">01:12</span>
+            </div>
+            <div class="ch-msg-text">bet</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:12:09">01:12</span>
+            </div>
+            <div class="ch-msg-text">Now on the left</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:12:16">01:12</span>
+            </div>
+            <div class="ch-msg-text">dna id?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:12:19">01:12</span>
+            </div>
+            <div class="ch-msg-text">Flas firmware</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:12:55">01:12</span>
+          <div class="ch-msg-text">And select your dma type if 35t or 75t and select the firmware file</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:16:04">01:16</span>
+            </div>
+            <div class="ch-msg-text">is their a jtag driver i need to download??</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:16:12">01:16</span>
+            </div>
+            <div class="ch-msg-text">No</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:16:17">01:16</span>
+            </div>
+            <div class="ch-msg-text">its connected to my pc but its failing to connect to my usb devices</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:16:25">01:16</span>
+            </div>
+            <div class="ch-msg-text">Lemme get on pc</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:16:30">01:16</span>
+          <div class="ch-msg-text">Send anydesk</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:16:40">01:16</span>
+          <div class="ch-msg-text">I’ll join in 5min</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:16:51">01:16</span>
+            </div>
+            <div class="ch-msg-text">okay</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:18:28">01:18</span>
+          <div class="ch-msg-text">it might be my settings n stuff go through my device manager</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:19:39">01:19</span>
+          <div class="ch-msg-text">1555201940</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:20:39">01:20</span>
+          <div class="ch-msg-text">1162357052 this is main pc</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:20:51">01:20</span>
+            </div>
+            <div class="ch-msg-text">Dont need main pc</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:20:56">01:20</span>
+          <div class="ch-msg-text">I’m coming 3 min</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:21:00">01:21</span>
+            </div>
+            <div class="ch-msg-text">okay</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:33:02">01:33</span>
+          <div class="ch-msg-text">it was my cord getting new one rn</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:33:06">01:33</span>
+          <div class="ch-msg-text">it was usb 2,0</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:33:15">01:33</span>
+            </div>
+            <div class="ch-msg-text">im joining rn</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:33:26">01:33</span>
+            </div>
+            <div class="ch-msg-text">hold up</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:33:33">01:33</span>
+          <div class="ch-msg-text">sorry</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:33:35">01:33</span>
+          <div class="ch-msg-text">ill brb</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:33:36">01:33</span>
+          <div class="ch-msg-text">2 mins</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:36:33">01:36</span>
+            </div>
+            <div class="ch-msg-text">ok accept me</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:36:44">01:36</span>
+            </div>
+            <div class="ch-msg-text">gotta get another cord bro</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:36:51">01:36</span>
+          <div class="ch-msg-text">or is it my computer</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:36:59">01:36</span>
+            </div>
+            <div class="ch-msg-text">bro</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:37:00">01:37</span>
+          <div class="ch-msg-text">accept me</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:37:01">01:37</span>
+          <div class="ch-msg-text">pls</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:37:14">01:37</span>
+            </div>
+            <div class="ch-msg-text">i did.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:38:27">01:38</span>
+            </div>
+            <div class="ch-msg-text">its not showing its plugged in jtag idk why</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:38:33">01:38</span>
+          <div class="ch-msg-text">if u dont fix this we cant proveed</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:38:37">01:38</span>
+          <div class="ch-msg-text">proceed</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:39:52">01:39</span>
+            </div>
+            <div class="ch-msg-text">im trying bro</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:39:56">01:39</span>
+          <div class="ch-msg-text">its been 2 days</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:40:01">01:40</span>
+            </div>
+            <div class="ch-msg-text">try using another pcie slot</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:40:04">01:40</span>
+          <div class="ch-msg-text">and another cable</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:40:08">01:40</span>
+            </div>
+            <div class="ch-msg-text">okay</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 01:40:12">01:40</span>
+            </div>
+            <div class="ch-msg-text">and plugging on another port on second pc</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:40:19">01:40</span>
+          <div class="ch-msg-text">if all these dont work its the card 90%</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 01:40:27">01:40</span>
+            </div>
+            <div class="ch-msg-text">okay</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 01:45:18">01:45</span>
+          <div class="ch-msg-text">bro this cord is usb 3.0 with the blue inside and its saying its 2.1</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:05:53">02:05</span>
+          <div class="ch-msg-text">bro theirs no way ive grabbed 3 usb 3.0 cords and they all say 2.0 <span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:05:56">02:05</span>
+          <div class="ch-msg-text">go to anydesk</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:06:47">02:06</span>
+          <div class="ch-msg-text">high speed on all of them</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 02:07:17">02:07</span>
+            </div>
+            <div class="ch-msg-text">if u can grab dna then it works</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:07:19">02:07</span>
+          <div class="ch-msg-text">look if u can</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 02:07:32">02:07</span>
+            </div>
+            <div class="ch-msg-text">okay</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:15:56">02:15</span>
+          <div class="ch-msg-text">dma keeps flashing</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:16:03">02:16</span>
+          <div class="ch-msg-text">what does that mean??</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:16:05">02:16</span>
+          <div class="ch-msg-text">the light</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:23:19">02:23</span>
+          <div class="ch-msg-text">and i plug in my main cord light stops blinking</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:33:33">02:33</span>
+          <div class="ch-msg-text">can i use this cord??<div class="ch-attachment"><img src="https://cdn.discordapp.com/attachments/1500145079866884118/1501003886734086305/IMG_3415.png?ex=6a54244d&amp;is=6a52d2cd&amp;hm=f928f8d514c352738b6cfd8fc33402a15d7ff38edbd3dd7049a22cc841dbcc43&amp;" alt="Image" loading="lazy"></div></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:33:42">02:33</span>
+          <div class="ch-msg-text">im finna buy this hoe rn <span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="05/05/2026, 02:35:05">02:35</span>
+            </div>
+            <div class="ch-msg-text">Yes it works but if u said u tried 3 cables and still don’t work at all I don’t think it’s a cable issue</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 02:35:29">02:35</span>
+            </div>
+            <div class="ch-msg-text">both of my lights are stable and i&#039;ve ran dma before i don&#039;t know what&#039;s wrong</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:36:44">02:36</span>
+          <div class="ch-msg-text"><div class="ch-attachment"><img src="https://cdn.discordapp.com/attachments/1500145079866884118/1501004686826930377/IMG_3416.png?ex=6a54250c&amp;is=6a52d38c&amp;hm=4b585ed147543fffa3c37d44710c95d8de87e777eeeae6067a2dc5db3c3578c0&amp;" alt="Image" loading="lazy"></div></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="05/05/2026, 02:37:33">02:37</span>
+          <div class="ch-msg-text">do i have to be on the same internet or smth i only have ethernet on my main</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4r9c" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')">4r9c</span>
+              <span class="ch-ts" title="05/05/2026, 23:00:41">23:00</span>
+            </div>
+            <div class="ch-msg-text">both has to have internet, shold be different</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="05/05/2026, 23:13:56">23:13</span>
+            </div>
+            <div class="ch-msg-text">what</div>
+          </div>
+        </div><div class="ch-date-divider"><span>sabato 9 maggio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="1800sms" style="background:#4caf50; background-image: url('https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">1800sms</span>
+              <span class="ch-ts" title="09/05/2026, 18:29:35">18:29</span>
+            </div>
+            <div class="ch-msg-text">yo guys i think i found the issue i had old firmware on my pc i need yall to check my device manager whenever yall can please hit me up ill respond ASAP</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/05/2026, 18:34:11">18:34</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')">@4r9c</span> <span class="ch-mention" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">@keezexx</span> can yall send me a speed test thing the original file?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="keezexx" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('keezexx', 'keezexx', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/2dbf466d77e3104c0e2dd1e2666704f2.png?size=128', '#2196f3', 'K')">keezexx</span>
+              <span class="ch-ts" title="09/05/2026, 19:46:54">19:46</span>
+            </div>
+            <div class="ch-msg-text">wdym</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/05/2026, 19:47:11">19:47</span>
+          <div class="ch-msg-text">its not a problem</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/05/2026, 19:47:17">19:47</span>
+          <div class="ch-msg-text">that u have an old fw</div>
+        </div><div class="ch-date-divider"><span>giovedì 9 luglio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4r9c" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')">4r9c</span>
+              <span class="ch-ts" title="09/07/2026, 21:22:35">21:22</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('1800sms', '1800sms', '1497965834709237951', 'https://cdn.discordapp.com/avatars/1497965834709237951/1c56a95b91bece11761ac3cf13b50050.png?size=128', '#4caf50', '1')">@1800sms</span> are you avaible?</div>
+          </div>
+        </div>
+  </div>
+
+  <div class="ch-footer">
+    Transcript generato da <strong>Elyra Support</strong>
+    &mdash; 12/07/2026, 07:21:54
+    &mdash; 228 messaggi &mdash; ID: 1500145079866884118
+  </div>
+
+  <div id="user-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-banner"></div>
+      <div class="modal-avatar-wrapper">
+        <div class="modal-avatar"><span id="modal-initial"></span><img id="modal-avatar-img" src=""></div>
+      </div>
+      <div class="modal-content-p">
+        <div class="modal-username" id="modal-username"></div>
+        <div class="modal-tag" id="modal-tag"></div>
+        <div class="modal-divider"></div>
+        <div class="modal-section">
+          <h3>ID DISCORD</h3>
+          <p id="modal-id"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showModal(username, tag, id, avatar, color, initial) {
+      document.getElementById('modal-username').innerText = username;
+      document.getElementById('modal-tag').innerText = tag;
+      document.getElementById('modal-id').innerText = id;
+      document.querySelector('.modal-banner').style.backgroundColor = color;
+      const img = document.getElementById('modal-avatar-img');
+      const initSpan = document.getElementById('modal-initial');
+      if(avatar) { img.src = avatar; img.style.display = 'block'; initSpan.style.display = 'none'; }
+      else { img.style.display = 'none'; initSpan.innerText = initial; initSpan.style.display = 'block'; document.querySelector('.modal-avatar').style.backgroundColor = color; }
+      document.getElementById('user-modal').classList.add('open');
+    }
+    function closeModal(e) {
+      if(e.target.id === 'user-modal') {
+        document.getElementById('user-modal').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>
