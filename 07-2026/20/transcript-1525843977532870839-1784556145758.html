@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transcript – #ticket-rankengine</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#313338;color:#dbdee1;font-family:'gg sans','Noto Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.375}
+    a{color:#00aff4;text-decoration:none}
+    /* ── Topbar ── */
+    .ch-topbar{display:flex;align-items:center;gap:12px;background:#2b2d31;padding:12px 20px;border-bottom:1px solid #1e1f22;position:sticky;top:0;z-index:10}
+    .ch-topbar-icon{font-size:22px;color:#80848e}
+    .ch-topbar-name{font-weight:700;font-size:16px;color:#f2f3f5}
+    .ch-topbar-topic{font-size:13px;color:#80848e;margin-left:8px;padding-left:8px;border-left:1px solid #3f4147;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* ── Info banner ── */
+    .ch-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:#1e1f22;border-bottom:1px solid #1e1f22}
+    .ch-info-cell{background:#2b2d31;padding:12px 20px}
+    .ch-info-label{font-size:11px;font-weight:700;color:#80848e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+    .ch-info-value{font-size:14px;color:#dbdee1}
+    /* ── Messages ── */
+    .ch-messages{padding:20px 0; overflow-wrap: anywhere;}
+    /* ── Date divider ── */
+    .ch-date-divider{display:flex;align-items:center;gap:8px;margin:20px 20px 8px;color:#80848e;font-size:12px;font-weight:600}
+    .ch-date-divider::before,.ch-date-divider::after{content:'';flex:1;height:1px;background:#3f4147}
+    /* ── Message group (new author) ── */
+    .ch-msg-group{display:flex;gap:16px;padding:2px 20px;margin-top:16px}
+    .ch-msg-group:hover{background:#2e3035}
+    /* ── Continuation (same author) ── */
+    .ch-msg-cont{display:flex;align-items:baseline;gap:16px;padding:1px 20px;padding-left:72px}
+    .ch-msg-cont:hover{background:#2e3035}
+    .ch-ts-mini{font-size:11px;color:transparent;min-width:36px;text-align:right;flex-shrink:0;transition:color .1s}
+    .ch-msg-cont:hover .ch-ts-mini{color:#80848e}
+    /* ── Avatar ── */
+    .ch-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:#fff;margin-top:2px;overflow:hidden}
+    /* ── Message body ── */
+    .ch-msg-body{flex:1;min-width:0}
+    .ch-msg-header{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+    .ch-author{font-weight:600;font-size:15px}
+    .ch-author.bot{color:#5865f2}
+    .ch-author.owner{color:#dbdee1}
+    .ch-author.staff{color:#57f287}
+    .ch-author.other{color:#dbdee1}
+    .ch-bot-badge{display:inline-block;background:#5865f2;color:#fff;font-size:10px;font-weight:500;padding:1px 4px;border-radius:3px;vertical-align:middle;margin-left:4px;line-height:1.4}
+    .ch-ts{font-size:12px;color:#80848e;font-weight:400}
+    .ch-msg-text{color:#dbdee1;font-size:15px;line-height:1.4}
+    /* ── Markdown & Mentions ── */
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    u { text-decoration: underline; text-underline-offset: 2px; }
+    del { text-decoration: line-through; }
+    code { background: #2b2d31; font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; font-size: 13.5px; padding: 0.2em; border-radius: 3px; }
+    pre { background: #2b2d31; border: 1px solid #1e1f22; padding: 8px; border-radius: 4px; margin: 6px 0; overflow-x: auto; }
+    pre code { background: transparent; padding: 0; border-radius: 0; }
+    .ch-mention { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 3px; border-radius: 3px; font-weight: 500; cursor: pointer; transition: background 0.1s; }
+    .ch-mention:hover { background: #5865f2; color: #fff; }
+    .ch-author[title] { cursor: pointer; }
+    .ch-author[title]:hover { text-decoration: underline; }
+    /* ── Embeds & Attachments ── */
+    .ch-embed {background: #2b2d31; border-left: 4px solid #202225; border-radius: 4px; padding: 12px; margin-top: 8px; max-width: 520px;}
+    .ch-embed-title {font-weight: 600; margin-bottom: 4px;}
+    .ch-embed-desc {font-size: 14px; margin-bottom: 8px; color:#dbdee1;}
+    .ch-embed-fields {display: flex; flex-wrap: wrap; gap: 8px;}
+    .ch-embed-field {flex: 1 1 100%;}
+    .ch-embed-field.inline {flex: 1 1 calc(33% - 8px); min-width: 150px;}
+    .ch-embed-field-name {font-size: 13px; font-weight: 600; color: #dbdee1; margin-bottom: 2px;}
+    .ch-embed-field-value {font-size: 13px; color: #dbdee1;}
+    .ch-attachment {margin-top: 8px;}
+    .ch-attachment img {max-width: 400px; max-height: 300px; border-radius: 4px;}
+    /* ── Footer ── */
+    .ch-footer{padding:20px;text-align:center;font-size:12px;color:#80848e;border-top:1px solid #3f4147;margin-top:12px}
+    .ch-footer strong{color:#dbdee1}
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; display: flex; }
+    .modal-card { background: #232428; width: 340px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.24); overflow: hidden; position: relative; transform: scale(0.95); transition: transform 0.2s; }
+    .modal-overlay.open .modal-card { transform: scale(1); }
+    .modal-banner { height: 105px; background: #5865f2; }
+    .modal-avatar-wrapper { position: absolute; top: 60px; left: 16px; background: #232428; padding: 6px; border-radius: 50%; }
+    .modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: #1e1f22; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; }
+    .modal-avatar img { width: 100%; height: 100%; display: none; object-fit: cover; }
+    .modal-content-p { padding: 50px 16px 16px 16px; color: #dbdee1; }
+    .modal-username { font-size: 20px; font-weight: 700; color: #f2f3f5; word-break: break-all; }
+    .modal-tag { font-size: 14px; color: #b5bac1; margin-bottom: 12px; }
+    .modal-divider { height: 1px; background: #3f4147; margin: 12px 0; }
+    .modal-section h3 { font-size: 12px; font-weight: 700; color: #f2f3f5; text-transform: uppercase; margin-bottom: 6px; }
+    .modal-section p { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="ch-topbar">
+    <span class="ch-topbar-icon">#</span>
+    <span class="ch-topbar-name">ticket-rankengine</span>
+    <span class="ch-topbar-topic">🛠️ Support &mdash; Ticket transcript</span>
+  </div>
+
+  <div class="ch-info">
+    <div class="ch-info-cell"><div class="ch-info-label">Tipo Ticket</div><div class="ch-info-value">🛠️ Support</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Utente</div><div class="ch-info-value">rankengine</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Staff (Claim)</div><div class="ch-info-value">4r9c</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso da</div><div class="ch-info-value">4r9c</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Aperto il</div><div class="ch-info-value">12/07/2026, 15:39:13</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso il</div><div class="ch-info-value">20/07/2026, 17:02:25</div></div>
+  </div>
+
+  <div class="ch-messages">
+    <div class="ch-date-divider"><span>domenica 12 luglio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="12/07/2026, 15:40:05">15:40</span>
+            </div>
+            <div class="ch-msg-text">Hi I&#039;m interested in buying DMA and then the software.. Whats DMA kit or accessosiries do I need to buy for the product to work so I can order it now? Or anything I need to know before I spend my money</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="12/07/2026, 15:40:07">15:40</span>
+            </div>
+            <div class="ch-msg-text">To set up a DMA system, you will need a few core components. Here is what you need to know:<br><br>### Required Hardware<br>1. <strong>Target PC (Gaming PC):</strong> Your main computer where the game runs.<br>2. <strong>Secondary PC (Radar/Cheat PC):</strong> A separate computer where the radar/cheat software runs.<br>3. <strong>DMA Hardware:</strong> You will need a DMA card installed in your Target PC. We offer a <strong>Full Hardware Bundle</strong> for 250 EUR, which includes the Makcu, DMA Card, and Fuser. <br>   * If you prefer to buy individual parts:<br>     * Makcu: 30 EUR<br>     * DMA Card: 90 EUR<br>     * Fuser: 100 EUR<br><br>### Important Considerations<br>* <strong>Shipping:</strong> Normal shipping takes approximately 12 business days. Express shipping is available for an additional 30 EUR (approximately 5 business days).<br>* <strong>Firmware:</strong> You will also need to select the appropriate firmware for the game you intend to play. Each anti-cheat (EAC, VGK, BattlEye, etc.) requires a specific firmware version, which range in price from 190 EUR to 800 EUR. Please let me know which game(s) you plan to play so I can guide you to the correct firmware.<br>* <strong>Payment:</strong> We accept Crypto (no fees), or PayPal and Credit/Debit Card (each incurs an additional 30 EUR fee).<br>* <strong>Power Cycling:</strong> Once your hardware is flashed with custom firmware, you must perform a full power cycle (unplug the power supply for 30 seconds) on your gaming PC before booting.<br><br>If you are ready to proceed, please confirm which hardware bundle or components you would like to order, as well as the game you intend to play, and I will assist you with the next steps to finalize your order.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="12/07/2026, 15:41:35">15:41</span>
+            </div>
+            <div class="ch-msg-text">i want to fortnite cheat</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="12/07/2026, 15:41:37">15:41</span>
+            </div>
+            <div class="ch-msg-text">For Fortnite, which utilizes the Easy Anti-Cheat (EAC) system, you will need a compatible firmware. We offer several options for EAC-protected games:<br><br>*   <strong>ELYRA EAC:</strong> 190 EUR (Supported by 35t, 75t, 100t, and ZDMA cards).<br>*   <strong>ELYRA PRIVATE:</strong> 550 EUR (Supports major ACs, including EAC; limited slots available).<br>*   <strong>ELYRA SLOT:</strong> 800 EUR (Highly exclusive, 5 slots only; supports all ACs).<br>*   <strong>ELYRA RDMA:</strong> (Contact support for pricing; bypasses the need for a physical DMA card by using a network-based approach).<br><br>To get started, please let me know if you would like to purchase the <strong>Full Hardware Bundle (250 EUR)</strong> or specific individual components. Once you decide on your hardware and which of the firmware options above you prefer, I can assist you with finalizing your order. <br><br>Additionally, please let me know which payment method you would prefer (Crypto, PayPal, or Credit/Debit Card) so I can prepare the details for you.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="12/07/2026, 15:42:38">15:42</span>
+            </div>
+            <div class="ch-msg-text">im confused is it 190 or more?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="12/07/2026, 15:42:39">15:42</span>
+            </div>
+            <div class="ch-msg-text">I apologize for the confusion. To clarify, the total cost for your setup consists of two separate parts: the <strong>Hardware</strong> and the <strong>Firmware</strong>.<br><br>1.  <strong>Hardware:</strong> You need the physical components to run DMA. The <strong>Full Hardware Bundle is 250 EUR</strong>.<br>2.  <strong>Firmware:</strong> You need the software code flashed onto the hardware to remain undetected by the anti-cheat. The <strong>ELYRA EAC firmware is 190 EUR</strong>.<br><br>So, if you choose the Full Hardware Bundle and the ELYRA EAC firmware, the total would be <strong>440 EUR</strong> (plus any applicable payment method fees).<br><br><strong>To summarize your costs:</strong><br>*   <strong>Hardware (Bundle):</strong> 250 EUR<br>*   <strong>Firmware (EAC):</strong> 190 EUR<br>*   <strong>Total:</strong> 440 EUR<br><br>Please note that if you choose to pay via PayPal or Credit/Debit Card, there is an additional 30 EUR fee. Crypto payments have no additional fees. <br><br>Would you like to proceed with this order, or would you like me to clarify anything else?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="12/07/2026, 15:43:32">15:43</span>
+            </div>
+            <div class="ch-msg-text">for my second pc, can it be a older not as fast laptop</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="12/07/2026, 15:43:33">15:43</span>
+            </div>
+            <div class="ch-msg-text">Yes, a secondary laptop is perfectly suitable for your Radar/Cheat PC. Since the cheat software and radar run entirely on the secondary machine, it does not need to be a high-performance gaming PC. It simply needs to be able to run the software and maintain a stable connection to your DMA card.<br><br>Just ensure that your laptop:<br>1. Has an available USB port for the connection to the DMA card.<br>2. Is capable of running the required drivers (such as FTDI drivers) and the software utility provided for your firmware.<br><br>If you are ready to proceed with your order for the hardware bundle and the EAC firmware, please let me know your preferred payment method so I can assist you with the next steps.</div>
+          </div>
+        </div><div class="ch-date-divider"><span>lunedì 13 luglio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="13/07/2026, 01:33:05">01:33</span>
+            </div>
+            <div class="ch-msg-text">if i want to buy the hardware parts myself what do i need to know and buy</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="13/07/2026, 01:33:08">01:33</span>
+            </div>
+            <div class="ch-msg-text">If you prefer to purchase the hardware components individually rather than the full bundle, you will need to buy the following three items:<br><br>1. <strong>DMA Card (90 EUR):</strong> This is the core device installed in your gaming PC.<br>2. <strong>Fuser (100 EUR):</strong> This is required to overlay the radar/cheat information onto your monitor.<br>3. <strong>Makcu (30 EUR):</strong> This is used to bridge the communication between your devices.<br><br><strong>Total for individual hardware components: 230 EUR.</strong><br><br><strong>Important things to keep in mind if you choose this route:</strong><br><br>*   <strong>Compatibility:</strong> Ensure the DMA card you purchase is compatible with the firmware you intend to use. For example, our <strong>ELYRA EAC</strong> firmware supports 35t, 75t, 100t, and ZDMA cards. <br>*   <strong>Firmware Necessity:</strong> Even if you buy the hardware yourself, you <strong>must</strong> purchase one of our firmwares to ensure your setup is secure and undetected. Hardware alone is not sufficient; the &quot;1:1 Real Device Emulation&quot; and other security features are contained within the custom firmware we provide.<br>*   <strong>Assembly:</strong> You will be responsible for installing these components into your setup. You will also need to perform the firmware flashing process yourself using the provided flashing utility once you have your hardware and firmware.<br>*   <strong>Shipping:</strong> Remember to factor in your shipping choice. Normal shipping is approximately 12 business days, while Express shipping (+30 EUR) is approximately 5 business days.<br><br>If you have already sourced this hardware elsewhere or intend to purchase them through us, please let me know so I can help you finalize your order for the firmware and any missing hardware pieces. If you have any specific technical questions about the installation process, please feel free to ask, or I can have a staff operator assist you further.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="13/07/2026, 01:34:34">01:34</span>
+            </div>
+            <div class="ch-msg-text">wait its £200 a month?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="13/07/2026, 01:34:36">01:34</span>
+            </div>
+            <div class="ch-msg-text">I believe there may be a misunderstanding regarding our pricing structure. <strong>We do not have a monthly subscription fee.</strong> <br><br>All prices listed in our information are one-time costs for the hardware components and the firmware itself. Once you purchase the hardware and the firmware, they are yours to keep and use. <br><br>To recap the one-time costs we discussed:<br>* <strong>Full Hardware Bundle:</strong> 250 EUR (One-time payment)<br>* <strong>ELYRA EAC Firmware:</strong> 190 EUR (One-time payment)<br><br>There are no recurring monthly charges for our products. Please let me know if you would like to proceed with your order or if you have any other questions!</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="13/07/2026, 01:34:52">01:34</span>
+            </div>
+            <div class="ch-msg-text">so i own the cheats forever</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="13/07/2026, 01:34:54">01:34</span>
+            </div>
+            <div class="ch-msg-text">Yes, that is correct. All of our firmware products are one-time purchases, meaning you own the specific firmware you buy. There are no monthly subscription fees for our software.<br><br>Once you purchase your chosen firmware and flash it onto your hardware, it is yours to use. If you have any further questions or would like to proceed with your order, please let me know which items you would like and your preferred payment method so I can assist you further.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="13/07/2026, 01:39:31">01:39</span>
+            </div>
+            <div class="ch-msg-text">what does 35t 75t 100t and shit mean are some better than others etc</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="13/07/2026, 01:39:33">01:39</span>
+            </div>
+            <div class="ch-msg-text">Those numbers refer to the <strong>FPGA chip capacity</strong> on the DMA card. In simple terms, the &quot;t&quot; stands for &quot;thousand,&quot; referring to the number of logic cells on the chip:<br><br>*   <strong>35t:</strong> An entry-level chip. It is capable and works perfectly fine for most standard firmware requirements.<br>*   <strong>75t and 100t:</strong> These are more powerful chips with more logic capacity. <br>*   <strong>ZDMA:</strong> This is a specific high-performance model.<br><br><strong>Does it matter which one you get?</strong><br>For the most part, the difference lies in the complexity and the specific requirements of the firmware you choose. Our firmware is designed to be compatible with these chips, but higher-capacity cards (like the 75t or 100t) are often recommended if you want to ensure the card can handle more complex, premium, or private firmware features in the future.<br><br>If you are looking at our specific firmware products:<br>*   <strong>ELYRA EAC</strong> supports 35t, 75t, 100t, and ZDMA.<br>*   <strong>ELYRA PRIVATE</strong> and <strong>ELYRA SLOT</strong> are premium options that require a higher-spec card (75t, 100t, or ZDMA).<br><br>If you are planning to get the <strong>Full Hardware Bundle</strong>, you don&#039;t need to worry about picking the specific card yourself—we provide the appropriate hardware that ensures compatibility with our firmwares. <br><br>Would you like to move forward with an order, or would you like to speak to a staff operator for a more technical deep-dive into the hardware differences?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="13/07/2026, 01:43:16">01:43</span>
+            </div>
+            <div class="ch-msg-text">like can some run differing HZ? does some needa computeretc?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="13/07/2026, 01:43:19">01:43</span>
+            </div>
+            <div class="ch-msg-text">The DMA hardware itself does not dictate your monitor&#039;s refresh rate (Hz); your gaming PC&#039;s GPU and your monitor handle that. However, because you are using a <strong>Fuser</strong> (included in the Hardware Bundle), the video signal from your gaming PC is routed through the Fuser to your monitor so that the radar/cheat overlay can be drawn on top of your game.<br><br>Regarding your question about needing a computer:<br><br>1.  <strong>Does some need a computer?</strong> Yes. Every DMA setup requires <strong>two computers</strong>:<br>    *   <strong>The Target PC:</strong> Your main gaming PC where the game runs and the DMA card is installed.<br>    *   <strong>The Second PC (or Laptop):</strong> This runs the radar software and sends the instructions to the DMA card. <br><br>2.  <strong>Is there an alternative?</strong> Yes, we offer <strong>ELYRA RDMA</strong>. This is a different technology that <strong>does not require a DMA card</strong> at all. <br>    *   It uses your home network to grab data.<br>    *   You only need two PCs that support Ethernet and a router. <br>    *   This is the only option that avoids using USB cables or local drivers, and it works for all anti-cheats. <br><br><strong>Summary for your setup:</strong><br>*   <strong>Standard DMA:</strong> Needs a DMA Card, Fuser, Makcu, and a second PC/Laptop.<br>*   <strong>RDMA:</strong> Needs no DMA hardware, just a network connection between two PCs via a router.<br><br>If you are concerned about performance or compatibility, the <strong>RDMA</strong> solution is our most advanced, &quot;zero-lag&quot; method. If you would like to know the pricing for RDMA or proceed with the standard hardware bundle, please let me know and I will assist you!</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="13/07/2026, 01:44:40">01:44</span>
+            </div>
+            <div class="ch-msg-text">how much is rdma i dont understand</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="13/07/2026, 01:44:42">01:44</span>
+            </div>
+            <div class="ch-msg-text">For <strong>ELYRA RDMA</strong>, the pricing is not a fixed amount like our other products; it is available upon request. Please let me know if you would like me to escalate this to a staff operator so they can provide you with a quote and discuss the specific network requirements for your setup.<br><br>To help you decide, here is the core difference:<br><br>*   <strong>Standard DMA:</strong> Requires you to physically install a card inside your PC, use USB cables to connect to a second computer, and use a Fuser to overlay the radar on your screen. It is a one-time hardware investment.<br>*   <strong>RDMA:</strong> Does <strong>not</strong> use a DMA card, Fuser, or USB cables. Instead, it uses your home network to securely transfer data between your gaming PC and your second PC. It is designed for maximum speed and zero performance impact on your gaming PC.<br><br>If you are leaning toward the <strong>Standard DMA (Hardware Bundle)</strong>, we already have the price set at <strong>250 EUR for hardware + 190 EUR for the EAC firmware (440 EUR total)</strong>. <br><br>Would you like me to connect you with a staff operator to get the specific quote for RDMA, or would you like to proceed with the standard hardware bundle?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="13/07/2026, 01:46:19">01:46</span>
+            </div>
+            <div class="ch-msg-text">explauin rdma is it new, how much does it cost etc</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="13/07/2026, 01:46:22">01:46</span>
+            </div>
+            <div class="ch-msg-text"><strong>ELYRA RDMA</strong> (Remote Direct Memory Access) is a highly advanced method that allows your secondary PC to access the memory of your gaming PC via your local home network, rather than using a physical DMA card and USB cables.<br><br>### Is it new?<br>RDMA is an industry-leading approach. It is technically &quot;newer&quot; in the sense that it bypasses the traditional hardware-based DMA card workflow entirely. It provides a full IOMMU bypass for all major anti-cheats (EAC, VGK, ACE, BE, Ricochet, FiveM, EA, FaceIT).<br><br>### Key Features of RDMA:<br>*   <strong>No DMA Card Needed:</strong> You do not need to open your gaming PC or install any hardware cards.<br>*   <strong>Network-Based:</strong> Your secondary PC communicates with your gaming PC through your router using two Ethernet cables.<br>*   <strong>Maximum Speed:</strong> It uses ultra-low latency network protocols to transfer data, which is faster and more stable than standard USB connections.<br>*   <strong>Zero Performance Loss:</strong> Since it relies on network communication rather than local drivers or hypervisors, your gaming PC experiences no FPS drops or performance impact.<br><br>### Costs:<br>Because RDMA is a specialized, high-performance service, <strong>the price is provided upon request</strong> based on your specific setup. <br><br><strong>Important Note:</strong> To use RDMA, both your gaming PC and your secondary PC must have Ethernet ports, and you will need a router to connect them.<br><br>Since I don&#039;t have the specific price for RDMA in my database, I recommend that you <strong>wait for a staff operator</strong> to claim this ticket. They can provide you with the exact cost, verify if your home network setup is compatible, and guide you through the process. <br><br>Would you like me to leave this ticket open for a staff member to assist you with the RDMA quote?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="rankengine" style="background:#ff9800; background-image: url('https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('rankengine', 'rankengine', '404019045357322250', 'https://cdn.discordapp.com/avatars/404019045357322250/df6f042413273d014ceaaa9b0df27a91.png?size=128', '#ff9800', 'R')">rankengine</span>
+              <span class="ch-ts" title="13/07/2026, 01:49:05">01:49</span>
+            </div>
+            <div class="ch-msg-text">yes i need rdma quote.. i have ethernet pc and ethernet laptop with a second/spare router<br><br>i was already heavily considering on getting standard DMA - but i have only seen this now</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="13/07/2026, 01:49:07">01:49</span>
+            </div>
+            <div class="ch-msg-text">That is great to hear. You have the perfect setup for RDMA, as having two PCs with Ethernet and a dedicated router will ensure the most stable and high-speed connection.<br><br>I have noted your interest in the <strong>ELYRA RDMA</strong> solution. Because the pricing for this service is tailored, I have marked your ticket as requiring a <strong>staff operator</strong>. A team member will review your request and provide you with a personalized quote, as well as confirm that your specific networking equipment is fully compatible to ensure the best performance.<br><br>Please remain in this ticket, and a staff member will assist you shortly. Is there anything else you would like to ask or clarify while you wait for the operator?</div>
+          </div>
+        </div><div class="ch-date-divider"><span>lunedì 20 luglio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="20/07/2026, 04:46:21">04:46</span>
+            </div>
+            <div class="ch-msg-text"><div class="ch-embed" style="border-left-color: #57f287"><div class="ch-embed-desc">✅ <span class="ch-mention" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')">@4r9c</span> has claimed this ticket.<br>Hello <span class="ch-mention" onclick="showModal('utente', 'Unknown', '404019045357322250', '', '#ff9800', 'U')">@utente</span>, your issue is in good hands!</div></div></div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4r9c" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')">4r9c</span>
+              <span class="ch-ts" title="20/07/2026, 04:46:33">04:46</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('utente', 'Unknown', '404019045357322250', '', '#ff9800', 'U')">@utente</span> still interested?</div>
+          </div>
+        </div>
+  </div>
+
+  <div class="ch-footer">
+    Transcript generato da <strong>Elyra Support</strong>
+    &mdash; 20/07/2026, 17:02:25
+    &mdash; 27 messaggi &mdash; ID: 1525843977532870839
+  </div>
+
+  <div id="user-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-banner"></div>
+      <div class="modal-avatar-wrapper">
+        <div class="modal-avatar"><span id="modal-initial"></span><img id="modal-avatar-img" src=""></div>
+      </div>
+      <div class="modal-content-p">
+        <div class="modal-username" id="modal-username"></div>
+        <div class="modal-tag" id="modal-tag"></div>
+        <div class="modal-divider"></div>
+        <div class="modal-section">
+          <h3>ID DISCORD</h3>
+          <p id="modal-id"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showModal(username, tag, id, avatar, color, initial) {
+      document.getElementById('modal-username').innerText = username;
+      document.getElementById('modal-tag').innerText = tag;
+      document.getElementById('modal-id').innerText = id;
+      document.querySelector('.modal-banner').style.backgroundColor = color;
+      const img = document.getElementById('modal-avatar-img');
+      const initSpan = document.getElementById('modal-initial');
+      if(avatar) { img.src = avatar; img.style.display = 'block'; initSpan.style.display = 'none'; }
+      else { img.style.display = 'none'; initSpan.innerText = initial; initSpan.style.display = 'block'; document.querySelector('.modal-avatar').style.backgroundColor = color; }
+      document.getElementById('user-modal').classList.add('open');
+    }
+    function closeModal(e) {
+      if(e.target.id === 'user-modal') {
+        document.getElementById('user-modal').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>
