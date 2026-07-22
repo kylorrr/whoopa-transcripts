@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transcript – #ticket-cosrta</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#313338;color:#dbdee1;font-family:'gg sans','Noto Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.375}
+    a{color:#00aff4;text-decoration:none}
+    /* ── Topbar ── */
+    .ch-topbar{display:flex;align-items:center;gap:12px;background:#2b2d31;padding:12px 20px;border-bottom:1px solid #1e1f22;position:sticky;top:0;z-index:10}
+    .ch-topbar-icon{font-size:22px;color:#80848e}
+    .ch-topbar-name{font-weight:700;font-size:16px;color:#f2f3f5}
+    .ch-topbar-topic{font-size:13px;color:#80848e;margin-left:8px;padding-left:8px;border-left:1px solid #3f4147;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* ── Info banner ── */
+    .ch-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:#1e1f22;border-bottom:1px solid #1e1f22}
+    .ch-info-cell{background:#2b2d31;padding:12px 20px}
+    .ch-info-label{font-size:11px;font-weight:700;color:#80848e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+    .ch-info-value{font-size:14px;color:#dbdee1}
+    /* ── Messages ── */
+    .ch-messages{padding:20px 0; overflow-wrap: anywhere;}
+    /* ── Date divider ── */
+    .ch-date-divider{display:flex;align-items:center;gap:8px;margin:20px 20px 8px;color:#80848e;font-size:12px;font-weight:600}
+    .ch-date-divider::before,.ch-date-divider::after{content:'';flex:1;height:1px;background:#3f4147}
+    /* ── Message group (new author) ── */
+    .ch-msg-group{display:flex;gap:16px;padding:2px 20px;margin-top:16px}
+    .ch-msg-group:hover{background:#2e3035}
+    /* ── Continuation (same author) ── */
+    .ch-msg-cont{display:flex;align-items:baseline;gap:16px;padding:1px 20px;padding-left:72px}
+    .ch-msg-cont:hover{background:#2e3035}
+    .ch-ts-mini{font-size:11px;color:transparent;min-width:36px;text-align:right;flex-shrink:0;transition:color .1s}
+    .ch-msg-cont:hover .ch-ts-mini{color:#80848e}
+    /* ── Avatar ── */
+    .ch-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:#fff;margin-top:2px;overflow:hidden}
+    /* ── Message body ── */
+    .ch-msg-body{flex:1;min-width:0}
+    .ch-msg-header{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+    .ch-author{font-weight:600;font-size:15px}
+    .ch-author.bot{color:#5865f2}
+    .ch-author.owner{color:#dbdee1}
+    .ch-author.staff{color:#57f287}
+    .ch-author.other{color:#dbdee1}
+    .ch-bot-badge{display:inline-block;background:#5865f2;color:#fff;font-size:10px;font-weight:500;padding:1px 4px;border-radius:3px;vertical-align:middle;margin-left:4px;line-height:1.4}
+    .ch-ts{font-size:12px;color:#80848e;font-weight:400}
+    .ch-msg-text{color:#dbdee1;font-size:15px;line-height:1.4}
+    /* ── Markdown & Mentions ── */
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    u { text-decoration: underline; text-underline-offset: 2px; }
+    del { text-decoration: line-through; }
+    code { background: #2b2d31; font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; font-size: 13.5px; padding: 0.2em; border-radius: 3px; }
+    pre { background: #2b2d31; border: 1px solid #1e1f22; padding: 8px; border-radius: 4px; margin: 6px 0; overflow-x: auto; }
+    pre code { background: transparent; padding: 0; border-radius: 0; }
+    .ch-mention { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 3px; border-radius: 3px; font-weight: 500; cursor: pointer; transition: background 0.1s; }
+    .ch-mention:hover { background: #5865f2; color: #fff; }
+    .ch-author[title] { cursor: pointer; }
+    .ch-author[title]:hover { text-decoration: underline; }
+    /* ── Embeds & Attachments ── */
+    .ch-embed {background: #2b2d31; border-left: 4px solid #202225; border-radius: 4px; padding: 12px; margin-top: 8px; max-width: 520px;}
+    .ch-embed-title {font-weight: 600; margin-bottom: 4px;}
+    .ch-embed-desc {font-size: 14px; margin-bottom: 8px; color:#dbdee1;}
+    .ch-embed-fields {display: flex; flex-wrap: wrap; gap: 8px;}
+    .ch-embed-field {flex: 1 1 100%;}
+    .ch-embed-field.inline {flex: 1 1 calc(33% - 8px); min-width: 150px;}
+    .ch-embed-field-name {font-size: 13px; font-weight: 600; color: #dbdee1; margin-bottom: 2px;}
+    .ch-embed-field-value {font-size: 13px; color: #dbdee1;}
+    .ch-attachment {margin-top: 8px;}
+    .ch-attachment img {max-width: 400px; max-height: 300px; border-radius: 4px;}
+    /* ── Footer ── */
+    .ch-footer{padding:20px;text-align:center;font-size:12px;color:#80848e;border-top:1px solid #3f4147;margin-top:12px}
+    .ch-footer strong{color:#dbdee1}
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; display: flex; }
+    .modal-card { background: #232428; width: 340px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.24); overflow: hidden; position: relative; transform: scale(0.95); transition: transform 0.2s; }
+    .modal-overlay.open .modal-card { transform: scale(1); }
+    .modal-banner { height: 105px; background: #5865f2; }
+    .modal-avatar-wrapper { position: absolute; top: 60px; left: 16px; background: #232428; padding: 6px; border-radius: 50%; }
+    .modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: #1e1f22; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; }
+    .modal-avatar img { width: 100%; height: 100%; display: none; object-fit: cover; }
+    .modal-content-p { padding: 50px 16px 16px 16px; color: #dbdee1; }
+    .modal-username { font-size: 20px; font-weight: 700; color: #f2f3f5; word-break: break-all; }
+    .modal-tag { font-size: 14px; color: #b5bac1; margin-bottom: 12px; }
+    .modal-divider { height: 1px; background: #3f4147; margin: 12px 0; }
+    .modal-section h3 { font-size: 12px; font-weight: 700; color: #f2f3f5; text-transform: uppercase; margin-bottom: 6px; }
+    .modal-section p { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="ch-topbar">
+    <span class="ch-topbar-icon">#</span>
+    <span class="ch-topbar-name">ticket-cosrta</span>
+    <span class="ch-topbar-topic">🛠️ Support &mdash; Ticket transcript</span>
+  </div>
+
+  <div class="ch-info">
+    <div class="ch-info-cell"><div class="ch-info-label">Tipo Ticket</div><div class="ch-info-value">🛠️ Support</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Utente</div><div class="ch-info-value">cosrta</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Staff (Claim)</div><div class="ch-info-value">4icy</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso da</div><div class="ch-info-value">g22_24</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Aperto il</div><div class="ch-info-value">16/07/2026, 10:07:06</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso il</div><div class="ch-info-value">22/07/2026, 13:34:51</div></div>
+  </div>
+
+  <div class="ch-messages">
+    <div class="ch-date-divider"><span>giovedì 16 luglio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="cosrta" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1241858110360912083/2ec7e69091571c744ff073b895e61d89.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('cosrta', 'cosrta', '1241858110360912083', 'https://cdn.discordapp.com/avatars/1241858110360912083/2ec7e69091571c744ff073b895e61d89.png?size=128', '#2196f3', 'C')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('cosrta', 'cosrta', '1241858110360912083', 'https://cdn.discordapp.com/avatars/1241858110360912083/2ec7e69091571c744ff073b895e61d89.png?size=128', '#2196f3', 'C')">cosrta</span>
+              <span class="ch-ts" title="16/07/2026, 10:08:08">10:08</span>
+            </div>
+            <div class="ch-msg-text">hello I have a question i want know Which of the 3 is the best for get ud for longtime<div class="ch-attachment"><img src="data:image/webp;base64,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" alt="Image" loading="lazy" style="max-width: 100%; max-height: 400px; border-radius: 4px;"></div></div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="16/07/2026, 10:08:11">10:08</span>
+            </div>
+            <div class="ch-msg-text">To help you choose the best option for long-term undetected (UD) usage, here is a summary of those three products:<br><br>*   <strong>ELYRA PRIVATE (550 EUR):</strong> This is a premium firmware supporting all major anti-cheats (VGK, EAC, BE, FaceIT). It is limited to a small number of users (e.g., 10/15 slots) to maintain high security.<br>*   <strong>ELYRA SLOT (800 EUR):</strong> This is our most exclusive firmware, limited to strictly 5 slots total. It is designed for maximum exclusivity and supports all anti-cheats on both Intel and AMD systems.<br>*   <strong>ELYRA RDMA (Contact Support):</strong> This is our most advanced solution. It does not require a DMA card; instead, it uses a network-based approach to provide a full IOMMU bypass for all anti-cheats. It is designed for zero performance impact, high stability, and total isolation.<br><br>While all three are designed to be undetected, <strong>ELYRA SLOT</strong> offers the highest level of exclusivity due to the extremely limited user base, and <strong>ELYRA RDMA</strong> offers the most robust technical method for bypassing anti-cheat detection through a full IOMMU bypass.<br><br>Please let me know which game you are planning to play, and I can further assist you in making a decision. If you have decided, please let me know your choice and I will have a staff member assist you with the finalization of your order.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="cosrta" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1241858110360912083/2ec7e69091571c744ff073b895e61d89.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('cosrta', 'cosrta', '1241858110360912083', 'https://cdn.discordapp.com/avatars/1241858110360912083/2ec7e69091571c744ff073b895e61d89.png?size=128', '#2196f3', 'C')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('cosrta', 'cosrta', '1241858110360912083', 'https://cdn.discordapp.com/avatars/1241858110360912083/2ec7e69091571c744ff073b895e61d89.png?size=128', '#2196f3', 'C')">cosrta</span>
+              <span class="ch-ts" title="16/07/2026, 10:10:12">10:10</span>
+            </div>
+            <div class="ch-msg-text">So, RDMA is the best option?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="16/07/2026, 10:10:14">10:10</span>
+            </div>
+            <div class="ch-msg-text">ELYRA RDMA is indeed our most advanced technical solution for bypassing anti-cheats. <br><br>Its primary advantage is the <strong>full IOMMU bypass</strong>, which works for every major anti-cheat (EAC, VGK, ACE, BE, Ricochet, FiveM, EA, and FaceIT). Because it uses an ultra-fast network connection rather than standard USB, it offers a distinct set of benefits:<br><br>*   <strong>Total Isolation:</strong> It operates via your local home network, meaning there is no local driver or hypervisor on your main PC.<br>*   <strong>Zero Performance Impact:</strong> Your main PC experiences no FPS loss or performance drops.<br>*   <strong>Stability:</strong> It is designed to be highly secure and stable, with no risk of the signal drops or disconnects that can sometimes occur with USB-based hardware.<br><br>Whether it is &quot;the best&quot; for you depends on your specific setup, as RDMA requires two PCs that both support Ethernet and specific network configuration. <br><br>If you would like to proceed with RDMA or have further questions, please let me know, and I will have a staff member assist you with the next steps.</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="16/07/2026, 10:11:40">10:11</span>
+          <div class="ch-msg-text"><div class="ch-embed" style="border-left-color: #57f287"><div class="ch-embed-desc">✅ <span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')">@4icy</span> has claimed this ticket.<br>Hello <span class="ch-mention" onclick="showModal('cosrta', 'cosrta', '1241858110360912083', 'https://cdn.discordapp.com/avatars/1241858110360912083/2ec7e69091571c744ff073b895e61d89.png?size=128', '#2196f3', 'C')">@cosrta</span>, your issue is in good hands!</div></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="16/07/2026, 10:11:42">10:11</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('cosrta', 'cosrta', '1241858110360912083', 'https://cdn.discordapp.com/avatars/1241858110360912083/2ec7e69091571c744ff073b895e61d89.png?size=128', '#2196f3', 'C')">@cosrta</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="16/07/2026, 10:11:52">10:11</span>
+          <div class="ch-msg-text">dont listen the ai he said bullshit this time</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="16/07/2026, 10:12:46">10:12</span>
+          <div class="ch-msg-text">the best for a super long run is <span class="ch-mention" title="ID Canale: 1498692937989492856">#🛡️elyra-slot</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="16/07/2026, 10:13:10">10:13</span>
+          <div class="ch-msg-text">you have to prove me you are in cheating scene since atleast some months, have the money to buy it and know how to use cheats and hide it, also id verification might be needed to get accepted to buy it.</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="16/07/2026, 10:14:10">10:14</span>
+          <div class="ch-msg-text">since its a slotted exclusive firmware and there are semi pros on it and until someone on it leaks it noone on it will be detected since noone on the market sells it.</div>
+        </div><div class="ch-date-divider"><span>lunedì 20 luglio 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4r9c" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')">4r9c</span>
+              <span class="ch-ts" title="20/07/2026, 17:04:16">17:04</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('cosrta', 'cosrta', '1241858110360912083', 'https://cdn.discordapp.com/avatars/1241858110360912083/2ec7e69091571c744ff073b895e61d89.png?size=128', '#2196f3', 'C')">@cosrta</span> still interested?</div>
+          </div>
+        </div>
+  </div>
+
+  <div class="ch-footer">
+    Transcript generato da <strong>Elyra Support</strong>
+    &mdash; 22/07/2026, 13:34:51
+    &mdash; 12 messaggi &mdash; ID: 1527209951104335984
+  </div>
+
+  <div id="user-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-banner"></div>
+      <div class="modal-avatar-wrapper">
+        <div class="modal-avatar"><span id="modal-initial"></span><img id="modal-avatar-img" src=""></div>
+      </div>
+      <div class="modal-content-p">
+        <div class="modal-username" id="modal-username"></div>
+        <div class="modal-tag" id="modal-tag"></div>
+        <div class="modal-divider"></div>
+        <div class="modal-section">
+          <h3>ID DISCORD</h3>
+          <p id="modal-id"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showModal(username, tag, id, avatar, color, initial) {
+      document.getElementById('modal-username').innerText = username;
+      document.getElementById('modal-tag').innerText = tag;
+      document.getElementById('modal-id').innerText = id;
+      document.querySelector('.modal-banner').style.backgroundColor = color;
+      const img = document.getElementById('modal-avatar-img');
+      const initSpan = document.getElementById('modal-initial');
+      if(avatar) { img.src = avatar; img.style.display = 'block'; initSpan.style.display = 'none'; }
+      else { img.style.display = 'none'; initSpan.innerText = initial; initSpan.style.display = 'block'; document.querySelector('.modal-avatar').style.backgroundColor = color; }
+      document.getElementById('user-modal').classList.add('open');
+    }
+    function closeModal(e) {
+      if(e.target.id === 'user-modal') {
+        document.getElementById('user-modal').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>
