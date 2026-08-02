@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transcript – #ticket-micel-tech</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#313338;color:#dbdee1;font-family:'gg sans','Noto Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.375}
+    a{color:#00aff4;text-decoration:none}
+    /* ── Topbar ── */
+    .ch-topbar{display:flex;align-items:center;gap:12px;background:#2b2d31;padding:12px 20px;border-bottom:1px solid #1e1f22;position:sticky;top:0;z-index:10}
+    .ch-topbar-icon{font-size:22px;color:#80848e}
+    .ch-topbar-name{font-weight:700;font-size:16px;color:#f2f3f5}
+    .ch-topbar-topic{font-size:13px;color:#80848e;margin-left:8px;padding-left:8px;border-left:1px solid #3f4147;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* ── Info banner ── */
+    .ch-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:#1e1f22;border-bottom:1px solid #1e1f22}
+    .ch-info-cell{background:#2b2d31;padding:12px 20px}
+    .ch-info-label{font-size:11px;font-weight:700;color:#80848e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+    .ch-info-value{font-size:14px;color:#dbdee1}
+    /* ── Messages ── */
+    .ch-messages{padding:20px 0; overflow-wrap: anywhere;}
+    /* ── Date divider ── */
+    .ch-date-divider{display:flex;align-items:center;gap:8px;margin:20px 20px 8px;color:#80848e;font-size:12px;font-weight:600}
+    .ch-date-divider::before,.ch-date-divider::after{content:'';flex:1;height:1px;background:#3f4147}
+    /* ── Message group (new author) ── */
+    .ch-msg-group{display:flex;gap:16px;padding:2px 20px;margin-top:16px}
+    .ch-msg-group:hover{background:#2e3035}
+    /* ── Continuation (same author) ── */
+    .ch-msg-cont{display:flex;align-items:baseline;gap:16px;padding:1px 20px;padding-left:72px}
+    .ch-msg-cont:hover{background:#2e3035}
+    .ch-ts-mini{font-size:11px;color:transparent;min-width:36px;text-align:right;flex-shrink:0;transition:color .1s}
+    .ch-msg-cont:hover .ch-ts-mini{color:#80848e}
+    /* ── Avatar ── */
+    .ch-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:#fff;margin-top:2px;overflow:hidden}
+    /* ── Message body ── */
+    .ch-msg-body{flex:1;min-width:0}
+    .ch-msg-header{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+    .ch-author{font-weight:600;font-size:15px}
+    .ch-author.bot{color:#5865f2}
+    .ch-author.owner{color:#dbdee1}
+    .ch-author.staff{color:#57f287}
+    .ch-author.other{color:#dbdee1}
+    .ch-bot-badge{display:inline-block;background:#5865f2;color:#fff;font-size:10px;font-weight:500;padding:1px 4px;border-radius:3px;vertical-align:middle;margin-left:4px;line-height:1.4}
+    .ch-ts{font-size:12px;color:#80848e;font-weight:400}
+    .ch-msg-text{color:#dbdee1;font-size:15px;line-height:1.4}
+    /* ── Markdown & Mentions ── */
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    u { text-decoration: underline; text-underline-offset: 2px; }
+    del { text-decoration: line-through; }
+    code { background: #2b2d31; font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; font-size: 13.5px; padding: 0.2em; border-radius: 3px; }
+    pre { background: #2b2d31; border: 1px solid #1e1f22; padding: 8px; border-radius: 4px; margin: 6px 0; overflow-x: auto; }
+    pre code { background: transparent; padding: 0; border-radius: 0; }
+    .ch-mention { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 3px; border-radius: 3px; font-weight: 500; cursor: pointer; transition: background 0.1s; }
+    .ch-mention:hover { background: #5865f2; color: #fff; }
+    .ch-author[title] { cursor: pointer; }
+    .ch-author[title]:hover { text-decoration: underline; }
+    /* ── Embeds & Attachments ── */
+    .ch-embed {background: #2b2d31; border-left: 4px solid #202225; border-radius: 4px; padding: 12px; margin-top: 8px; max-width: 520px;}
+    .ch-embed-title {font-weight: 600; margin-bottom: 4px;}
+    .ch-embed-desc {font-size: 14px; margin-bottom: 8px; color:#dbdee1;}
+    .ch-embed-fields {display: flex; flex-wrap: wrap; gap: 8px;}
+    .ch-embed-field {flex: 1 1 100%;}
+    .ch-embed-field.inline {flex: 1 1 calc(33% - 8px); min-width: 150px;}
+    .ch-embed-field-name {font-size: 13px; font-weight: 600; color: #dbdee1; margin-bottom: 2px;}
+    .ch-embed-field-value {font-size: 13px; color: #dbdee1;}
+    .ch-attachment {margin-top: 8px;}
+    .ch-attachment img {max-width: 400px; max-height: 300px; border-radius: 4px;}
+    /* ── Footer ── */
+    .ch-footer{padding:20px;text-align:center;font-size:12px;color:#80848e;border-top:1px solid #3f4147;margin-top:12px}
+    .ch-footer strong{color:#dbdee1}
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; display: flex; }
+    .modal-card { background: #232428; width: 340px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.24); overflow: hidden; position: relative; transform: scale(0.95); transition: transform 0.2s; }
+    .modal-overlay.open .modal-card { transform: scale(1); }
+    .modal-banner { height: 105px; background: #5865f2; }
+    .modal-avatar-wrapper { position: absolute; top: 60px; left: 16px; background: #232428; padding: 6px; border-radius: 50%; }
+    .modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: #1e1f22; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; }
+    .modal-avatar img { width: 100%; height: 100%; display: none; object-fit: cover; }
+    .modal-content-p { padding: 50px 16px 16px 16px; color: #dbdee1; }
+    .modal-username { font-size: 20px; font-weight: 700; color: #f2f3f5; word-break: break-all; }
+    .modal-tag { font-size: 14px; color: #b5bac1; margin-bottom: 12px; }
+    .modal-divider { height: 1px; background: #3f4147; margin: 12px 0; }
+    .modal-section h3 { font-size: 12px; font-weight: 700; color: #f2f3f5; text-transform: uppercase; margin-bottom: 6px; }
+    .modal-section p { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="ch-topbar">
+    <span class="ch-topbar-icon">#</span>
+    <span class="ch-topbar-name">ticket-micel-tech</span>
+    <span class="ch-topbar-topic">🛠️ Support &mdash; Ticket transcript</span>
+  </div>
+
+  <div class="ch-info">
+    <div class="ch-info-cell"><div class="ch-info-label">Tipo Ticket</div><div class="ch-info-value">🛠️ Support</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Utente</div><div class="ch-info-value">micel_tech</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Staff (Claim)</div><div class="ch-info-value">4icy</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso da</div><div class="ch-info-value">4icy</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Aperto il</div><div class="ch-info-value">02/08/2026, 12:47:48</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso il</div><div class="ch-info-value">02/08/2026, 12:59:53</div></div>
+  </div>
+
+  <div class="ch-messages">
+    <div class="ch-date-divider"><span>domenica 2 agosto 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:49:24">12:49</span>
+            </div>
+            <div class="ch-msg-text">Hello guys ik your are saying in the ticket message to not ask about media but maybe i can ask i can do very good viedos 3 in a week 4k 120fps and i can show esp in the vuedos</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="02/08/2026, 12:49:26">12:49</span>
+            </div>
+            <div class="ch-msg-text">Hello! Thank you for reaching out to us. <br><br>To help us evaluate your application for our media creator program, could you please provide the following information:<br><br>1. Links to some of your existing videos or channels.<br>2. Which game you intend to create media for.<br>3. Confirmation that you already have all the necessary equipment (Hardware, PC, etc.) to make media.<br><br>Once you provide these details, please wait for a staff member to claim this ticket and assist you with the final decision.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:49:40">12:49</span>
+            </div>
+            <div class="ch-msg-text">we dont say not ask to do media</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:49:57">12:49</span>
+          <div class="ch-msg-text">we day dont ask free firmware or any product for media</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:50:13">12:50</span>
+            </div>
+            <div class="ch-msg-text">Oh alr</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:50:20">12:50</span>
+            </div>
+            <div class="ch-msg-text">if you want to do media you need to buy first (can make discount) then we pay every video if it meets our requirements</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:50:56">12:50</span>
+            </div>
+            <div class="ch-msg-text">Do i have purchase often and waht are the requiremwnts</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:51:10">12:51</span>
+            </div>
+            <div class="ch-msg-text">wdym do i have to purchase often?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:51:19">12:51</span>
+          <div class="ch-msg-text"><div class="ch-attachment"><img src="data:image/webp;base64,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" alt="Image" loading="lazy" style="max-width: 100%; max-height: 400px; border-radius: 4px;"></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:51:28">12:51</span>
+            </div>
+            <div class="ch-msg-text">Oh sry i didnt read</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:51:30">12:51</span>
+          <div class="ch-msg-text">Thx</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:51:33">12:51</span>
+            </div>
+            <div class="ch-msg-text">tournments only</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:52:25">12:52</span>
+            </div>
+            <div class="ch-msg-text">And if i do the media do like i pay again for media or not?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:52:35">12:52</span>
+            </div>
+            <div class="ch-msg-text">wdym?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:52:38">12:52</span>
+          <div class="ch-msg-text">bro</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:53:00">12:53</span>
+          <div class="ch-msg-text">every video with our requirements in tournments is 15$</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:53:19">12:53</span>
+          <div class="ch-msg-text">u dont need to edit or anything</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:53:31">12:53</span>
+          <div class="ch-msg-text">u just need to send recording with google drive</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:53:57">12:53</span>
+            </div>
+            <div class="ch-msg-text">Noway i get payed for it</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:54:02">12:54</span>
+            </div>
+            <div class="ch-msg-text">yes</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:55:22">12:55</span>
+            </div>
+            <div class="ch-msg-text">Like a example if i buy <span class="ch-mention" title="ID Canale: 1524511276045303828">#🛡️・rdma</span>  and did media alr and everything is fine do i get only the 15 or do i get like another week</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:56:00">12:56</span>
+            </div>
+            <div class="ch-msg-text">we can give more subscriptions yes</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:56:29">12:56</span>
+            </div>
+            <div class="ch-msg-text">Wtf</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:56:49">12:56</span>
+          <div class="ch-msg-text">Are you even making +</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:57:55">12:57</span>
+            </div>
+            <div class="ch-msg-text">?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:57:58">12:57</span>
+          <div class="ch-msg-text">yes obviously</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:58:29">12:58</span>
+            </div>
+            <div class="ch-msg-text">Alr so pay first make media gwt accepted and countinue alr thx</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:58:42">12:58</span>
+            </div>
+            <div class="ch-msg-text">huh?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:58:49">12:58</span>
+          <div class="ch-msg-text">.</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:58:59">12:58</span>
+          <div class="ch-msg-text">dont waste my time pls i already told you everything</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:59:06">12:59</span>
+            </div>
+            <div class="ch-msg-text">Yea thx</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:59:18">12:59</span>
+          <div class="ch-msg-text">I just said waht i understanded</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/e410f2f45f18cd93a030c6bbd102d61b.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="02/08/2026, 12:59:31">12:59</span>
+            </div>
+            <div class="ch-msg-text">😭</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="micel_tech" style="background:#f44336; background-image: url('https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('micel_tech', 'micel_tech', '1241011619115565057', 'https://cdn.discordapp.com/avatars/1241011619115565057/bb44c73faafccf36d22a75ceea2d1731.png?size=128', '#f44336', 'M')">micel_tech</span>
+              <span class="ch-ts" title="02/08/2026, 12:59:39">12:59</span>
+            </div>
+            <div class="ch-msg-text">You can close</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="02/08/2026, 12:59:42">12:59</span>
+          <div class="ch-msg-text">Ticket</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Tickets v2#5105" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1325579039888511056/0475b9e371572541147b21c4dfc04c77.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Tickets v2', 'Tickets v2#5105', '1325579039888511056', 'https://cdn.discordapp.com/avatars/1325579039888511056/0475b9e371572541147b21c4dfc04c77.png?size=128', '#5865f2', 'T')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Tickets v2', 'Tickets v2#5105', '1325579039888511056', 'https://cdn.discordapp.com/avatars/1325579039888511056/0475b9e371572541147b21c4dfc04c77.png?size=128', '#5865f2', 'T')">Tickets v2<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="02/08/2026, 12:59:45">12:59</span>
+            </div>
+            <div class="ch-msg-text"><div class="ch-embed" style="border-left-color: #fc3f35"><div class="ch-embed-title">Error</div><div class="ch-embed-desc">This is not a ticket channel</div></div></div>
+          </div>
+        </div>
+  </div>
+
+  <div class="ch-footer">
+    Transcript generato da <strong>Elyra Support</strong>
+    &mdash; 02/08/2026, 12:59:53
+    &mdash; 37 messaggi &mdash; ID: 1533410986457825310
+  </div>
+
+  <div id="user-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-banner"></div>
+      <div class="modal-avatar-wrapper">
+        <div class="modal-avatar"><span id="modal-initial"></span><img id="modal-avatar-img" src=""></div>
+      </div>
+      <div class="modal-content-p">
+        <div class="modal-username" id="modal-username"></div>
+        <div class="modal-tag" id="modal-tag"></div>
+        <div class="modal-divider"></div>
+        <div class="modal-section">
+          <h3>ID DISCORD</h3>
+          <p id="modal-id"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showModal(username, tag, id, avatar, color, initial) {
+      document.getElementById('modal-username').innerText = username;
+      document.getElementById('modal-tag').innerText = tag;
+      document.getElementById('modal-id').innerText = id;
+      document.querySelector('.modal-banner').style.backgroundColor = color;
+      const img = document.getElementById('modal-avatar-img');
+      const initSpan = document.getElementById('modal-initial');
+      if(avatar) { img.src = avatar; img.style.display = 'block'; initSpan.style.display = 'none'; }
+      else { img.style.display = 'none'; initSpan.innerText = initial; initSpan.style.display = 'block'; document.querySelector('.modal-avatar').style.backgroundColor = color; }
+      document.getElementById('user-modal').classList.add('open');
+    }
+    function closeModal(e) {
+      if(e.target.id === 'user-modal') {
+        document.getElementById('user-modal').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>
