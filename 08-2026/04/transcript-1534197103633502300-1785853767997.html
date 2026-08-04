@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transcript – #ticket-tavesei</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#313338;color:#dbdee1;font-family:'gg sans','Noto Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.375}
+    a{color:#00aff4;text-decoration:none}
+    /* ── Topbar ── */
+    .ch-topbar{display:flex;align-items:center;gap:12px;background:#2b2d31;padding:12px 20px;border-bottom:1px solid #1e1f22;position:sticky;top:0;z-index:10}
+    .ch-topbar-icon{font-size:22px;color:#80848e}
+    .ch-topbar-name{font-weight:700;font-size:16px;color:#f2f3f5}
+    .ch-topbar-topic{font-size:13px;color:#80848e;margin-left:8px;padding-left:8px;border-left:1px solid #3f4147;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* ── Info banner ── */
+    .ch-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:#1e1f22;border-bottom:1px solid #1e1f22}
+    .ch-info-cell{background:#2b2d31;padding:12px 20px}
+    .ch-info-label{font-size:11px;font-weight:700;color:#80848e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+    .ch-info-value{font-size:14px;color:#dbdee1}
+    /* ── Messages ── */
+    .ch-messages{padding:20px 0; overflow-wrap: anywhere;}
+    /* ── Date divider ── */
+    .ch-date-divider{display:flex;align-items:center;gap:8px;margin:20px 20px 8px;color:#80848e;font-size:12px;font-weight:600}
+    .ch-date-divider::before,.ch-date-divider::after{content:'';flex:1;height:1px;background:#3f4147}
+    /* ── Message group (new author) ── */
+    .ch-msg-group{display:flex;gap:16px;padding:2px 20px;margin-top:16px}
+    .ch-msg-group:hover{background:#2e3035}
+    /* ── Continuation (same author) ── */
+    .ch-msg-cont{display:flex;align-items:baseline;gap:16px;padding:1px 20px;padding-left:72px}
+    .ch-msg-cont:hover{background:#2e3035}
+    .ch-ts-mini{font-size:11px;color:transparent;min-width:36px;text-align:right;flex-shrink:0;transition:color .1s}
+    .ch-msg-cont:hover .ch-ts-mini{color:#80848e}
+    /* ── Avatar ── */
+    .ch-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:#fff;margin-top:2px;overflow:hidden}
+    /* ── Message body ── */
+    .ch-msg-body{flex:1;min-width:0}
+    .ch-msg-header{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+    .ch-author{font-weight:600;font-size:15px}
+    .ch-author.bot{color:#5865f2}
+    .ch-author.owner{color:#dbdee1}
+    .ch-author.staff{color:#57f287}
+    .ch-author.other{color:#dbdee1}
+    .ch-bot-badge{display:inline-block;background:#5865f2;color:#fff;font-size:10px;font-weight:500;padding:1px 4px;border-radius:3px;vertical-align:middle;margin-left:4px;line-height:1.4}
+    .ch-ts{font-size:12px;color:#80848e;font-weight:400}
+    .ch-msg-text{color:#dbdee1;font-size:15px;line-height:1.4}
+    /* ── Markdown & Mentions ── */
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    u { text-decoration: underline; text-underline-offset: 2px; }
+    del { text-decoration: line-through; }
+    code { background: #2b2d31; font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; font-size: 13.5px; padding: 0.2em; border-radius: 3px; }
+    pre { background: #2b2d31; border: 1px solid #1e1f22; padding: 8px; border-radius: 4px; margin: 6px 0; overflow-x: auto; }
+    pre code { background: transparent; padding: 0; border-radius: 0; }
+    .ch-mention { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 3px; border-radius: 3px; font-weight: 500; cursor: pointer; transition: background 0.1s; }
+    .ch-mention:hover { background: #5865f2; color: #fff; }
+    .ch-author[title] { cursor: pointer; }
+    .ch-author[title]:hover { text-decoration: underline; }
+    /* ── Embeds & Attachments ── */
+    .ch-embed {background: #2b2d31; border-left: 4px solid #202225; border-radius: 4px; padding: 12px; margin-top: 8px; max-width: 520px;}
+    .ch-embed-title {font-weight: 600; margin-bottom: 4px;}
+    .ch-embed-desc {font-size: 14px; margin-bottom: 8px; color:#dbdee1;}
+    .ch-embed-fields {display: flex; flex-wrap: wrap; gap: 8px;}
+    .ch-embed-field {flex: 1 1 100%;}
+    .ch-embed-field.inline {flex: 1 1 calc(33% - 8px); min-width: 150px;}
+    .ch-embed-field-name {font-size: 13px; font-weight: 600; color: #dbdee1; margin-bottom: 2px;}
+    .ch-embed-field-value {font-size: 13px; color: #dbdee1;}
+    .ch-attachment {margin-top: 8px;}
+    .ch-attachment img {max-width: 400px; max-height: 300px; border-radius: 4px;}
+    /* ── Footer ── */
+    .ch-footer{padding:20px;text-align:center;font-size:12px;color:#80848e;border-top:1px solid #3f4147;margin-top:12px}
+    .ch-footer strong{color:#dbdee1}
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; display: flex; }
+    .modal-card { background: #232428; width: 340px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.24); overflow: hidden; position: relative; transform: scale(0.95); transition: transform 0.2s; }
+    .modal-overlay.open .modal-card { transform: scale(1); }
+    .modal-banner { height: 105px; background: #5865f2; }
+    .modal-avatar-wrapper { position: absolute; top: 60px; left: 16px; background: #232428; padding: 6px; border-radius: 50%; }
+    .modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: #1e1f22; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; }
+    .modal-avatar img { width: 100%; height: 100%; display: none; object-fit: cover; }
+    .modal-content-p { padding: 50px 16px 16px 16px; color: #dbdee1; }
+    .modal-username { font-size: 20px; font-weight: 700; color: #f2f3f5; word-break: break-all; }
+    .modal-tag { font-size: 14px; color: #b5bac1; margin-bottom: 12px; }
+    .modal-divider { height: 1px; background: #3f4147; margin: 12px 0; }
+    .modal-section h3 { font-size: 12px; font-weight: 700; color: #f2f3f5; text-transform: uppercase; margin-bottom: 6px; }
+    .modal-section p { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="ch-topbar">
+    <span class="ch-topbar-icon">#</span>
+    <span class="ch-topbar-name">ticket-tavesei</span>
+    <span class="ch-topbar-topic">🛠️ Support &mdash; Ticket transcript</span>
+  </div>
+
+  <div class="ch-info">
+    <div class="ch-info-cell"><div class="ch-info-label">Tipo Ticket</div><div class="ch-info-value">🛠️ Support</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Utente</div><div class="ch-info-value">tavesei</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Staff (Claim)</div><div class="ch-info-value">4icy</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso da</div><div class="ch-info-value">tavesei</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Aperto il</div><div class="ch-info-value">04/08/2026, 16:51:33</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso il</div><div class="ch-info-value">04/08/2026, 17:29:27</div></div>
+  </div>
+
+  <div class="ch-messages">
+    <div class="ch-date-divider"><span>martedì 4 agosto 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="tavesei" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')">tavesei</span>
+              <span class="ch-ts" title="04/08/2026, 16:53:34">16:53</span>
+            </div>
+            <div class="ch-msg-text">hey, so for edma if I bought monthly, would you guys help me set it up, and when I buy edma monthly wheres the cheat for fortnite for edma? or can I just use the <span class="ch-mention" title="ID Canale: 1458351548248887497">#🛡️・elyra-private</span> or <span class="ch-mention" title="ID Canale: 1458351406858633327">#🛡️・elyra-eac</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="04/08/2026, 16:53:35">16:53</span>
+            </div>
+            <div class="ch-msg-text">Hello! <br><br>Regarding your question about Fortnite, you can use <strong>ELYRA EAC</strong>, <strong>ELYRA PRIVATE</strong>, or <strong>ELYRA SLOT</strong> firmwares, as Fortnite runs on the Easy Anti-Cheat (EAC) system. <br><br>Please note that we sell DMA hardware and firmware solutions, but we do not provide cheats or software menus. <br><br>Since you are already in a support ticket, please state your requested items clearly and wait for a staff member to assist you with the finalization of your order and help answer any setup questions. <br><br>Let me know if you need help with anything else mentioned in our catalog!</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="tavesei" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')">tavesei</span>
+              <span class="ch-ts" title="04/08/2026, 16:54:49">16:54</span>
+            </div>
+            <div class="ch-msg-text">so once I buy edma, that means I have the dma then I just need the cheat, so i buy your firmware, then have to go and buy a cheat somewhere else</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="04/08/2026, 16:55:11">16:55</span>
+            </div>
+            <div class="ch-msg-text">Yes, exactly. A DMA card and custom firmware are used to securely read system memory and run your secondary tools undetected, but we do not provide software menus or cheats themselves. Once you have your hardware and firmware set up, you would source your own radar or overlay software to use with it. <br><br>Please state your requested items (hardware or specific firmware) and wait for a staff member to assist you with the finalization of your order. Let me know if you have any other questions about our hardware or firmware products!</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="tavesei" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')">tavesei</span>
+              <span class="ch-ts" title="04/08/2026, 16:55:47">16:55</span>
+            </div>
+            <div class="ch-msg-text">and the edma is functional with your firmwares?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="04/08/2026, 16:57:33">16:57</span>
+            </div>
+            <div class="ch-msg-text">I don&#039;t have the necessary information about &quot;edma&quot; to answer that question. Please wait for a staff operator to assist you with this specific detail.</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 16:58:08">16:58</span>
+          <div class="ch-msg-text"><div class="ch-embed" style="border-left-color: #57f287"><div class="ch-embed-desc">✅ <span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')">@4icy</span> has claimed this ticket.<br>Hello <span class="ch-mention" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')">@tavesei</span>, your issue is in good hands!</div></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="04/08/2026, 16:58:19">16:58</span>
+            </div>
+            <div class="ch-msg-text">hello how can i help you?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 16:59:49">16:59</span>
+          <div class="ch-msg-text">edma is a complete different memory readyng method</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 16:59:57">16:59</span>
+          <div class="ch-msg-text">read it pls <span class="ch-mention" title="ID Canale: 1528579474352898139">#🛡️・edma</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 17:00:14">17:00</span>
+          <div class="ch-msg-text">our DMA firmwares are these<div class="ch-attachment"><img src="data:image/webp;base64,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" alt="Image" loading="lazy" style="max-width: 100%; max-height: 400px; border-radius: 4px;"></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="tavesei" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')">tavesei</span>
+              <span class="ch-ts" title="04/08/2026, 17:06:04">17:06</span>
+            </div>
+            <div class="ch-msg-text">so id have to buy the dma setup etc to run the firmware and edma is something completely diff</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 17:09:20">17:09</span>
+          <div class="ch-msg-text">and can I buy a setup from you guys</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 17:09:23">17:09</span>
+          <div class="ch-msg-text">like a dma setup?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="04/08/2026, 17:12:51">17:12</span>
+            </div>
+            <div class="ch-msg-text">yes</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 17:13:07">17:13</span>
+          <div class="ch-msg-text">we sell full hardware bundle shipping included for 240eur</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="tavesei" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')">tavesei</span>
+              <span class="ch-ts" title="04/08/2026, 17:13:16">17:13</span>
+            </div>
+            <div class="ch-msg-text">oh shoot</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 17:13:20">17:13</span>
+          <div class="ch-msg-text">paypal invoice?</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 17:13:56">17:13</span>
+          <div class="ch-msg-text">if thats an option or is it only crypto</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="04/08/2026, 17:14:10">17:14</span>
+            </div>
+            <div class="ch-msg-text">no only crypto and crypto giftcard</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 17:14:17">17:14</span>
+          <div class="ch-msg-text">you can buy giftcard with paypal or card</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="04/08/2026, 17:14:58">17:14</span>
+          <div class="ch-msg-text">https://www.eneba.com/gift-me-crypto-gift-me-crypto-gift-card-50-eur-key-global?enb<em>campaign=Main%20Search&amp;enb</em>content=search%20dropdown%20-%20products&amp;enb<em>medium=product%20card&amp;enb</em>source=https%3A%2F%2Fwww.eneba.com%2Fstore%2Fall&amp;enb_term=3<div class="ch-embed" style="border-left-color: #4618ac"><div class="ch-embed-title">Buy Gift Me Crypto Gift Card 50 EUR Key Cheaper!</div><div class="ch-embed-desc">Cheap Gift Me Crypto Gift Card 50 EUR key. Visit Eneba and buy digital gift cards &amp; top-ups at the best price.</div></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="tavesei" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')">tavesei</span>
+              <span class="ch-ts" title="04/08/2026, 17:15:01">17:15</span>
+            </div>
+            <div class="ch-msg-text">ok also last question im new to this dma stuff so is the firmware the &quot;cheat&quot;</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="04/08/2026, 17:15:03">17:15</span>
+            </div>
+            <div class="ch-msg-text">these gift cards we accept</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="tavesei" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('tavesei', 'tavesei', '1108859960017825994', 'https://cdn.discordapp.com/avatars/1108859960017825994/45e7dc4405a2bf6e4bc8bd3071b1b5c9.png?size=128', '#e91e63', 'T')">tavesei</span>
+              <span class="ch-ts" title="04/08/2026, 17:15:09">17:15</span>
+            </div>
+            <div class="ch-msg-text">or just something that makes the dma undetec</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/9ea71403d26f98adbb5beb552ee50b4f.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="04/08/2026, 17:15:21">17:15</span>
+            </div>
+            <div class="ch-msg-text">no the firmware is to hide the dmacard from anticheats</div>
+          </div>
+        </div>
+  </div>
+
+  <div class="ch-footer">
+    Transcript generato da <strong>Elyra Support</strong>
+    &mdash; 04/08/2026, 17:29:27
+    &mdash; 27 messaggi &mdash; ID: 1534197103633502300
+  </div>
+
+  <div id="user-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-banner"></div>
+      <div class="modal-avatar-wrapper">
+        <div class="modal-avatar"><span id="modal-initial"></span><img id="modal-avatar-img" src=""></div>
+      </div>
+      <div class="modal-content-p">
+        <div class="modal-username" id="modal-username"></div>
+        <div class="modal-tag" id="modal-tag"></div>
+        <div class="modal-divider"></div>
+        <div class="modal-section">
+          <h3>ID DISCORD</h3>
+          <p id="modal-id"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showModal(username, tag, id, avatar, color, initial) {
+      document.getElementById('modal-username').innerText = username;
+      document.getElementById('modal-tag').innerText = tag;
+      document.getElementById('modal-id').innerText = id;
+      document.querySelector('.modal-banner').style.backgroundColor = color;
+      const img = document.getElementById('modal-avatar-img');
+      const initSpan = document.getElementById('modal-initial');
+      if(avatar) { img.src = avatar; img.style.display = 'block'; initSpan.style.display = 'none'; }
+      else { img.style.display = 'none'; initSpan.innerText = initial; initSpan.style.display = 'block'; document.querySelector('.modal-avatar').style.backgroundColor = color; }
+      document.getElementById('user-modal').classList.add('open');
+    }
+    function closeModal(e) {
+      if(e.target.id === 'user-modal') {
+        document.getElementById('user-modal').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>
