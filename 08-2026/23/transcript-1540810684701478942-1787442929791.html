@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transcript – #ticket-survette</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#313338;color:#dbdee1;font-family:'gg sans','Noto Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.375}
+    a{color:#00aff4;text-decoration:none}
+    /* ── Topbar ── */
+    .ch-topbar{display:flex;align-items:center;gap:12px;background:#2b2d31;padding:12px 20px;border-bottom:1px solid #1e1f22;position:sticky;top:0;z-index:10}
+    .ch-topbar-icon{font-size:22px;color:#80848e}
+    .ch-topbar-name{font-weight:700;font-size:16px;color:#f2f3f5}
+    .ch-topbar-topic{font-size:13px;color:#80848e;margin-left:8px;padding-left:8px;border-left:1px solid #3f4147;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* ── Info banner ── */
+    .ch-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:#1e1f22;border-bottom:1px solid #1e1f22}
+    .ch-info-cell{background:#2b2d31;padding:12px 20px}
+    .ch-info-label{font-size:11px;font-weight:700;color:#80848e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+    .ch-info-value{font-size:14px;color:#dbdee1}
+    /* ── Messages ── */
+    .ch-messages{padding:20px 0; overflow-wrap: anywhere;}
+    /* ── Date divider ── */
+    .ch-date-divider{display:flex;align-items:center;gap:8px;margin:20px 20px 8px;color:#80848e;font-size:12px;font-weight:600}
+    .ch-date-divider::before,.ch-date-divider::after{content:'';flex:1;height:1px;background:#3f4147}
+    /* ── Message group (new author) ── */
+    .ch-msg-group{display:flex;gap:16px;padding:2px 20px;margin-top:16px}
+    .ch-msg-group:hover{background:#2e3035}
+    /* ── Continuation (same author) ── */
+    .ch-msg-cont{display:flex;align-items:baseline;gap:16px;padding:1px 20px;padding-left:72px}
+    .ch-msg-cont:hover{background:#2e3035}
+    .ch-ts-mini{font-size:11px;color:transparent;min-width:36px;text-align:right;flex-shrink:0;transition:color .1s}
+    .ch-msg-cont:hover .ch-ts-mini{color:#80848e}
+    /* ── Avatar ── */
+    .ch-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:#fff;margin-top:2px;overflow:hidden}
+    /* ── Message body ── */
+    .ch-msg-body{flex:1;min-width:0}
+    .ch-msg-header{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+    .ch-author{font-weight:600;font-size:15px}
+    .ch-author.bot{color:#5865f2}
+    .ch-author.owner{color:#dbdee1}
+    .ch-author.staff{color:#57f287}
+    .ch-author.other{color:#dbdee1}
+    .ch-bot-badge{display:inline-block;background:#5865f2;color:#fff;font-size:10px;font-weight:500;padding:1px 4px;border-radius:3px;vertical-align:middle;margin-left:4px;line-height:1.4}
+    .ch-ts{font-size:12px;color:#80848e;font-weight:400}
+    .ch-msg-text{color:#dbdee1;font-size:15px;line-height:1.4}
+    /* ── Markdown & Mentions ── */
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    u { text-decoration: underline; text-underline-offset: 2px; }
+    del { text-decoration: line-through; }
+    code { background: #2b2d31; font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; font-size: 13.5px; padding: 0.2em; border-radius: 3px; }
+    pre { background: #2b2d31; border: 1px solid #1e1f22; padding: 8px; border-radius: 4px; margin: 6px 0; overflow-x: auto; }
+    pre code { background: transparent; padding: 0; border-radius: 0; }
+    .ch-mention { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 3px; border-radius: 3px; font-weight: 500; cursor: pointer; transition: background 0.1s; }
+    .ch-mention:hover { background: #5865f2; color: #fff; }
+    .ch-author[title] { cursor: pointer; }
+    .ch-author[title]:hover { text-decoration: underline; }
+    /* ── Embeds & Attachments ── */
+    .ch-embed {background: #2b2d31; border-left: 4px solid #202225; border-radius: 4px; padding: 12px; margin-top: 8px; max-width: 520px;}
+    .ch-embed-title {font-weight: 600; margin-bottom: 4px;}
+    .ch-embed-desc {font-size: 14px; margin-bottom: 8px; color:#dbdee1;}
+    .ch-embed-fields {display: flex; flex-wrap: wrap; gap: 8px;}
+    .ch-embed-field {flex: 1 1 100%;}
+    .ch-embed-field.inline {flex: 1 1 calc(33% - 8px); min-width: 150px;}
+    .ch-embed-field-name {font-size: 13px; font-weight: 600; color: #dbdee1; margin-bottom: 2px;}
+    .ch-embed-field-value {font-size: 13px; color: #dbdee1;}
+    .ch-attachment {margin-top: 8px;}
+    .ch-attachment img {max-width: 400px; max-height: 300px; border-radius: 4px;}
+    /* ── Footer ── */
+    .ch-footer{padding:20px;text-align:center;font-size:12px;color:#80848e;border-top:1px solid #3f4147;margin-top:12px}
+    .ch-footer strong{color:#dbdee1}
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; display: flex; }
+    .modal-card { background: #232428; width: 340px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.24); overflow: hidden; position: relative; transform: scale(0.95); transition: transform 0.2s; }
+    .modal-overlay.open .modal-card { transform: scale(1); }
+    .modal-banner { height: 105px; background: #5865f2; }
+    .modal-avatar-wrapper { position: absolute; top: 60px; left: 16px; background: #232428; padding: 6px; border-radius: 50%; }
+    .modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: #1e1f22; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; }
+    .modal-avatar img { width: 100%; height: 100%; display: none; object-fit: cover; }
+    .modal-content-p { padding: 50px 16px 16px 16px; color: #dbdee1; }
+    .modal-username { font-size: 20px; font-weight: 700; color: #f2f3f5; word-break: break-all; }
+    .modal-tag { font-size: 14px; color: #b5bac1; margin-bottom: 12px; }
+    .modal-divider { height: 1px; background: #3f4147; margin: 12px 0; }
+    .modal-section h3 { font-size: 12px; font-weight: 700; color: #f2f3f5; text-transform: uppercase; margin-bottom: 6px; }
+    .modal-section p { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="ch-topbar">
+    <span class="ch-topbar-icon">#</span>
+    <span class="ch-topbar-name">ticket-survette</span>
+    <span class="ch-topbar-topic">🛠️ Support &mdash; Ticket transcript</span>
+  </div>
+
+  <div class="ch-info">
+    <div class="ch-info-cell"><div class="ch-info-label">Tipo Ticket</div><div class="ch-info-value">🛠️ Support</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Utente</div><div class="ch-info-value">survette</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Staff (Claim)</div><div class="ch-info-value">4icy</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso da</div><div class="ch-info-value">4icy</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Aperto il</div><div class="ch-info-value">22/08/2026, 22:51:34</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso il</div><div class="ch-info-value">23/08/2026, 02:55:29</div></div>
+  </div>
+
+  <div class="ch-messages">
+    <div class="ch-date-divider"><span>sabato 22 agosto 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:51:44">22:51</span>
+            </div>
+            <div class="ch-msg-text">avevo una domanda</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:51:48">22:51</span>
+          <div class="ch-msg-text">sellate acc twt?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:52:03">22:52</span>
+            </div>
+            <div class="ch-msg-text">no</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:52:09">22:52</span>
+            </div>
+            <div class="ch-msg-text">0 proprio?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:52:15">22:52</span>
+            </div>
+            <div class="ch-msg-text">non vendiamo nessun acc</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:52:34">22:52</span>
+            </div>
+            <div class="ch-msg-text">neanche vostro personal che non usate più?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:52:38">22:52</span>
+            </div>
+            <div class="ch-msg-text">di cosa</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:52:44">22:52</span>
+            </div>
+            <div class="ch-msg-text">twitter bro</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:52:46">22:52</span>
+            </div>
+            <div class="ch-msg-text">che social</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:52:47">22:52</span>
+          <div class="ch-msg-text">ah</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:53:08">22:53</span>
+          <div class="ch-msg-text">https://x.com/keezexx<div class="ch-embed" style="border-left-color: #1da1f2"><div class="ch-embed-title">keeze (@keezexx) on X</div><div class="ch-embed-desc">quit<br>https://t.co/3siHPjsyYZ</div></div></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:53:10">22:53</span>
+          <div class="ch-msg-text">ho questo</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:53:17">22:53</span>
+          <div class="ch-msg-text">cvhe lo posso vendere tanto non ci faccio un cazzo</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:53:55">22:53</span>
+          <div class="ch-msg-text">anzi ho qualche dm non posso</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:54:16">22:54</span>
+            </div>
+            <div class="ch-msg-text">altri maybe con qualche semi pro nei follower</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:54:46">22:54</span>
+            </div>
+            <div class="ch-msg-text">bro se ti interessa mi posso far seguire su un acc da tutti i pro ita</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:55:01">22:55</span>
+          <div class="ch-msg-text">sto in call ora con rax</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:55:02">22:55</span>
+          <div class="ch-msg-text">sbari</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:55:03">22:55</span>
+          <div class="ch-msg-text">aleezy</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:55:06">22:55</span>
+          <div class="ch-msg-text">dizko</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:55:10">22:55</span>
+          <div class="ch-msg-text">e altri</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:55:39">22:55</span>
+            </div>
+            <div class="ch-msg-text">e quanto vorresti?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:55:53">22:55</span>
+            </div>
+            <div class="ch-msg-text">bo dipende</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:56:00">22:56</span>
+          <div class="ch-msg-text">quali vuoi</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:56:05">22:56</span>
+          <div class="ch-msg-text">e che ci fai poi?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:56:31">22:56</span>
+            </div>
+            <div class="ch-msg-text">devo restarta a cheatta</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:56:38">22:56</span>
+          <div class="ch-msg-text">e mi serve un twt semi legit capi</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:56:42">22:56</span>
+            </div>
+            <div class="ch-msg-text">ah okok</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:56:52">22:56</span>
+            </div>
+            <div class="ch-msg-text">che mi hanno sbannato il main</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:56:54">22:56</span>
+            </div>
+            <div class="ch-msg-text">bo dimmi quali vuoi</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:57:05">22:57</span>
+            </div>
+            <div class="ch-msg-text">per quei 4 li?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:57:06">22:57</span>
+            </div>
+            <div class="ch-msg-text">e chiedo quanto vogggggggliono</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:57:09">22:57</span>
+          <div class="ch-msg-text">chi</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:57:15">22:57</span>
+            </div>
+            <div class="ch-msg-text">rax etc</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:57:22">22:57</span>
+            </div>
+            <div class="ch-msg-text"><div class="ch-attachment"><img src="data:image/webp;base64,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" alt="Image" loading="lazy" style="max-width: 100%; max-height: 400px; border-radius: 4px;"></div></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:57:29">22:57</span>
+          <div class="ch-msg-text">questi ho adesso a disposizione chiedo se vuoi</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:57:48">22:57</span>
+          <div class="ch-msg-text">quanto vogliono</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:57:59">22:57</span>
+            </div>
+            <div class="ch-msg-text">vabene</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:58:03">22:58</span>
+          <div class="ch-msg-text">che ragazzi seri</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:58:08">22:58</span>
+          <div class="ch-msg-text">ma dizko è tornato a giocare?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:58:14">22:58</span>
+            </div>
+            <div class="ch-msg-text">no sta in call e ba</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:58:26">22:58</span>
+            </div>
+            <div class="ch-msg-text">ah kk</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:58:26">22:58</span>
+            </div>
+            <div class="ch-msg-text">eh dimmi chi</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:58:38">22:58</span>
+            </div>
+            <div class="ch-msg-text">rax bimbo e fai un altro</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:58:44">22:58</span>
+          <div class="ch-msg-text">sono quelli un pelo più “seri” ahahah</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:58:51">22:58</span>
+            </div>
+            <div class="ch-msg-text">bimbo?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:58:56">22:58</span>
+          <div class="ch-msg-text">e il bimbo delle token eh</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:58:59">22:58</span>
+          <div class="ch-msg-text">non il mate di radeon</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 22:59:13">22:59</span>
+            </div>
+            <div class="ch-msg-text">ah ahahahha</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:59:15">22:59</span>
+          <div class="ch-msg-text">mb</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:59:36">22:59</span>
+          <div class="ch-msg-text">fai rax sbari e un altro</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 22:59:48">22:59</span>
+          <div class="ch-msg-text">tu puoi seguirmi free😘</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 22:59:57">22:59</span>
+            </div>
+            <div class="ch-msg-text">ok hahaha</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 23:00:01">23:00</span>
+          <div class="ch-msg-text">quanto e il budget</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 23:00:44">23:00</span>
+            </div>
+            <div class="ch-msg-text">dipende quanto chiedono loro ahahah</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 23:00:48">23:00</span>
+          <div class="ch-msg-text">non troppo giuro</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 23:00:53">23:00</span>
+            </div>
+            <div class="ch-msg-text">appena stacca live chiedo</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 23:00:57">23:00</span>
+            </div>
+            <div class="ch-msg-text">sisi chill</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 23:01:00">23:01</span>
+          <div class="ch-msg-text">chi è in stream</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 23:01:05">23:01</span>
+            </div>
+            <div class="ch-msg-text">rax</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 23:01:10">23:01</span>
+            </div>
+            <div class="ch-msg-text">kks</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 23:01:11">23:01</span>
+            </div>
+            <div class="ch-msg-text">e forse qualcun altro</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 23:02:43">23:02</span>
+            </div>
+            <div class="ch-msg-text">ma te stai ancora giocando?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 23:02:45">23:02</span>
+          <div class="ch-msg-text">o hai quit?</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="22/08/2026, 23:03:06">23:03</span>
+            </div>
+            <div class="ch-msg-text">non gioco tornei faccio creativa e basta</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 23:03:15">23:03</span>
+          <div class="ch-msg-text">mandami il link del twitter per i follow</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="22/08/2026, 23:03:20">23:03</span>
+            </div>
+            <div class="ch-msg-text">ahh okok</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 23:04:09">23:04</span>
+          <div class="ch-msg-text">mo te lo passo un sec</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="22/08/2026, 23:07:46">23:07</span>
+          <div class="ch-msg-text">https://x.com/svrfnr</div>
+        </div><div class="ch-date-divider"><span>domenica 23 agosto 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="23/08/2026, 02:18:24">02:18</span>
+            </div>
+            <div class="ch-msg-text">news</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="23/08/2026, 02:45:37">02:45</span>
+            </div>
+            <div class="ch-msg-text">zleo bimbo quello delle token e frizi ti vanno bene?</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="23/08/2026, 02:46:06">02:46</span>
+          <div class="ch-msg-text">scrivimi in dm poi</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="23/08/2026, 02:46:11">02:46</span>
+          <div class="ch-msg-text">cosi leggo prima</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="23/08/2026, 02:46:54">02:46</span>
+            </div>
+            <div class="ch-msg-text">rax niente?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="23/08/2026, 02:47:24">02:47</span>
+            </div>
+            <div class="ch-msg-text">e off</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="23/08/2026, 02:47:26">02:47</span>
+          <div class="ch-msg-text">e non vcuole</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="survette" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('survette', 'survette', '260253831626096651', 'https://cdn.discordapp.com/avatars/260253831626096651/d3e57786c0e9ea3e35b9a04d5fd31654.png?size=128', '#2196f3', 'S')">survette</span>
+              <span class="ch-ts" title="23/08/2026, 02:47:30">02:47</span>
+            </div>
+            <div class="ch-msg-text">kks</div>
+          </div>
+        </div>
+  </div>
+
+  <div class="ch-footer">
+    Transcript generato da <strong>Elyra Support</strong>
+    &mdash; 23/08/2026, 02:55:29
+    &mdash; 78 messaggi &mdash; ID: 1540810684701478942
+  </div>
+
+  <div id="user-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-banner"></div>
+      <div class="modal-avatar-wrapper">
+        <div class="modal-avatar"><span id="modal-initial"></span><img id="modal-avatar-img" src=""></div>
+      </div>
+      <div class="modal-content-p">
+        <div class="modal-username" id="modal-username"></div>
+        <div class="modal-tag" id="modal-tag"></div>
+        <div class="modal-divider"></div>
+        <div class="modal-section">
+          <h3>ID DISCORD</h3>
+          <p id="modal-id"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showModal(username, tag, id, avatar, color, initial) {
+      document.getElementById('modal-username').innerText = username;
+      document.getElementById('modal-tag').innerText = tag;
+      document.getElementById('modal-id').innerText = id;
+      document.querySelector('.modal-banner').style.backgroundColor = color;
+      const img = document.getElementById('modal-avatar-img');
+      const initSpan = document.getElementById('modal-initial');
+      if(avatar) { img.src = avatar; img.style.display = 'block'; initSpan.style.display = 'none'; }
+      else { img.style.display = 'none'; initSpan.innerText = initial; initSpan.style.display = 'block'; document.querySelector('.modal-avatar').style.backgroundColor = color; }
+      document.getElementById('user-modal').classList.add('open');
+    }
+    function closeModal(e) {
+      if(e.target.id === 'user-modal') {
+        document.getElementById('user-modal').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>
