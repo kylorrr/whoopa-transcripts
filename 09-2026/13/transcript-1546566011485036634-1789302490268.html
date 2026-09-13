@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transcript – #ticket-minikanye</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#313338;color:#dbdee1;font-family:'gg sans','Noto Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.375}
+    a{color:#00aff4;text-decoration:none}
+    /* ── Topbar ── */
+    .ch-topbar{display:flex;align-items:center;gap:12px;background:#2b2d31;padding:12px 20px;border-bottom:1px solid #1e1f22;position:sticky;top:0;z-index:10}
+    .ch-topbar-icon{font-size:22px;color:#80848e}
+    .ch-topbar-name{font-weight:700;font-size:16px;color:#f2f3f5}
+    .ch-topbar-topic{font-size:13px;color:#80848e;margin-left:8px;padding-left:8px;border-left:1px solid #3f4147;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* ── Info banner ── */
+    .ch-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:#1e1f22;border-bottom:1px solid #1e1f22}
+    .ch-info-cell{background:#2b2d31;padding:12px 20px}
+    .ch-info-label{font-size:11px;font-weight:700;color:#80848e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+    .ch-info-value{font-size:14px;color:#dbdee1}
+    /* ── Messages ── */
+    .ch-messages{padding:20px 0; overflow-wrap: anywhere;}
+    /* ── Date divider ── */
+    .ch-date-divider{display:flex;align-items:center;gap:8px;margin:20px 20px 8px;color:#80848e;font-size:12px;font-weight:600}
+    .ch-date-divider::before,.ch-date-divider::after{content:'';flex:1;height:1px;background:#3f4147}
+    /* ── Message group (new author) ── */
+    .ch-msg-group{display:flex;gap:16px;padding:2px 20px;margin-top:16px}
+    .ch-msg-group:hover{background:#2e3035}
+    /* ── Continuation (same author) ── */
+    .ch-msg-cont{display:flex;align-items:baseline;gap:16px;padding:1px 20px;padding-left:72px}
+    .ch-msg-cont:hover{background:#2e3035}
+    .ch-ts-mini{font-size:11px;color:transparent;min-width:36px;text-align:right;flex-shrink:0;transition:color .1s}
+    .ch-msg-cont:hover .ch-ts-mini{color:#80848e}
+    /* ── Avatar ── */
+    .ch-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:#fff;margin-top:2px;overflow:hidden}
+    /* ── Message body ── */
+    .ch-msg-body{flex:1;min-width:0}
+    .ch-msg-header{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+    .ch-author{font-weight:600;font-size:15px}
+    .ch-author.bot{color:#5865f2}
+    .ch-author.owner{color:#dbdee1}
+    .ch-author.staff{color:#57f287}
+    .ch-author.other{color:#dbdee1}
+    .ch-bot-badge{display:inline-block;background:#5865f2;color:#fff;font-size:10px;font-weight:500;padding:1px 4px;border-radius:3px;vertical-align:middle;margin-left:4px;line-height:1.4}
+    .ch-ts{font-size:12px;color:#80848e;font-weight:400}
+    .ch-msg-text{color:#dbdee1;font-size:15px;line-height:1.4}
+    /* ── Markdown & Mentions ── */
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    u { text-decoration: underline; text-underline-offset: 2px; }
+    del { text-decoration: line-through; }
+    code { background: #2b2d31; font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; font-size: 13.5px; padding: 0.2em; border-radius: 3px; }
+    pre { background: #2b2d31; border: 1px solid #1e1f22; padding: 8px; border-radius: 4px; margin: 6px 0; overflow-x: auto; }
+    pre code { background: transparent; padding: 0; border-radius: 0; }
+    .ch-mention { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 3px; border-radius: 3px; font-weight: 500; cursor: pointer; transition: background 0.1s; }
+    .ch-mention:hover { background: #5865f2; color: #fff; }
+    .ch-author[title] { cursor: pointer; }
+    .ch-author[title]:hover { text-decoration: underline; }
+    /* ── Embeds & Attachments ── */
+    .ch-embed {background: #2b2d31; border-left: 4px solid #202225; border-radius: 4px; padding: 12px; margin-top: 8px; max-width: 520px;}
+    .ch-embed-title {font-weight: 600; margin-bottom: 4px;}
+    .ch-embed-desc {font-size: 14px; margin-bottom: 8px; color:#dbdee1;}
+    .ch-embed-fields {display: flex; flex-wrap: wrap; gap: 8px;}
+    .ch-embed-field {flex: 1 1 100%;}
+    .ch-embed-field.inline {flex: 1 1 calc(33% - 8px); min-width: 150px;}
+    .ch-embed-field-name {font-size: 13px; font-weight: 600; color: #dbdee1; margin-bottom: 2px;}
+    .ch-embed-field-value {font-size: 13px; color: #dbdee1;}
+    .ch-attachment {margin-top: 8px;}
+    .ch-attachment img {max-width: 400px; max-height: 300px; border-radius: 4px;}
+    /* ── Footer ── */
+    .ch-footer{padding:20px;text-align:center;font-size:12px;color:#80848e;border-top:1px solid #3f4147;margin-top:12px}
+    .ch-footer strong{color:#dbdee1}
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; display: flex; }
+    .modal-card { background: #232428; width: 340px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.24); overflow: hidden; position: relative; transform: scale(0.95); transition: transform 0.2s; }
+    .modal-overlay.open .modal-card { transform: scale(1); }
+    .modal-banner { height: 105px; background: #5865f2; }
+    .modal-avatar-wrapper { position: absolute; top: 60px; left: 16px; background: #232428; padding: 6px; border-radius: 50%; }
+    .modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: #1e1f22; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; }
+    .modal-avatar img { width: 100%; height: 100%; display: none; object-fit: cover; }
+    .modal-content-p { padding: 50px 16px 16px 16px; color: #dbdee1; }
+    .modal-username { font-size: 20px; font-weight: 700; color: #f2f3f5; word-break: break-all; }
+    .modal-tag { font-size: 14px; color: #b5bac1; margin-bottom: 12px; }
+    .modal-divider { height: 1px; background: #3f4147; margin: 12px 0; }
+    .modal-section h3 { font-size: 12px; font-weight: 700; color: #f2f3f5; text-transform: uppercase; margin-bottom: 6px; }
+    .modal-section p { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="ch-topbar">
+    <span class="ch-topbar-icon">#</span>
+    <span class="ch-topbar-name">ticket-minikanye</span>
+    <span class="ch-topbar-topic">🛠️ Support &mdash; Ticket transcript</span>
+  </div>
+
+  <div class="ch-info">
+    <div class="ch-info-cell"><div class="ch-info-label">Tipo Ticket</div><div class="ch-info-value">🛠️ Support</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Utente</div><div class="ch-info-value">minikanye</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Staff (Claim)</div><div class="ch-info-value">4r9c</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso da</div><div class="ch-info-value">minikanye</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Aperto il</div><div class="ch-info-value">07/09/2026, 20:01:11</div></div>
+    <div class="ch-info-cell"><div class="ch-info-label">Chiuso il</div><div class="ch-info-value">13/09/2026, 15:28:10</div></div>
+  </div>
+
+  <div class="ch-messages">
+    <div class="ch-date-divider"><span>lunedì 7 settembre 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="07/09/2026, 20:01:34">20:01</span>
+            </div>
+            <div class="ch-msg-text">can ii make media for rdma</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="07/09/2026, 20:01:35">20:01</span>
+            </div>
+            <div class="ch-msg-text">Yes, you certainly can! To help us process your request to become a media creator, please provide the following information:<br><br>1. Links to some of your existing videos or channels.<br>2. The specific game you intend to create media for.<br>3. Confirmation that you already have all the necessary equipment (Hardware, PC, etc.) to make media.<br><br>Once you provide these details, please wait for a staff member to claim the ticket and assist you with the final decision.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="07/09/2026, 20:01:57">20:01</span>
+            </div>
+            <div class="ch-msg-text">https://www.youtube.com/@MeetsEu-y6v</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="07/09/2026, 20:01:59">20:01</span>
+            </div>
+            <div class="ch-msg-text">Thank you for sharing your channel link! <br><br>To help us proceed, could you please also let us know:<br>1. Which game you intend to create media for?<br>2. Do you already have all the necessary equipment (Hardware, PC, etc.) to make media?<br><br>Once you provide these details, please wait for a staff member to claim the ticket and assist you with the final decision.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="07/09/2026, 20:02:08">20:02</span>
+            </div>
+            <div class="ch-msg-text">fortnite</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="07/09/2026, 20:02:10">20:02</span>
+            </div>
+            <div class="ch-msg-text">Thank you for letting us know! <br><br>Could you please confirm if you already have all the necessary equipment (Hardware, PC, etc.) to make media? <br><br>Once you provide that final detail, please wait for a staff member to claim the ticket and assist you with the final decision.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="07/09/2026, 20:02:24">20:02</span>
+            </div>
+            <div class="ch-msg-text">everything ready</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="07/09/2026, 20:02:25">20:02</span>
+            </div>
+            <div class="ch-msg-text">Thank you for confirming that you have everything ready! <br><br>Please wait for a staff member to claim this ticket and assist you with the final decision regarding your media creation request.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="07/09/2026, 20:02:38">20:02</span>
+            </div>
+            <div class="ch-msg-text">i can make video also with esp</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="07/09/2026, 20:02:40">20:02</span>
+            </div>
+            <div class="ch-msg-text">Thank you for letting us know. Please wait for a staff member to claim the ticket and assist you further with your media request.</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="07/09/2026, 20:03:43">20:03</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')">@4r9c</span><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span><span class="ch-mention" onclick="showModal('g22<em>24', 'g22</em>24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">@g22_24</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="Elyra Support#0884" style="background:#5865f2; background-image: url('https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author bot" title="Clicca per info utente" onclick="showModal('Elyra Support', 'Elyra Support#0884', '1520801779170938880', 'https://cdn.discordapp.com/avatars/1520801779170938880/96f9cadb55fa03b56036bce73e81b310.png?size=128', '#5865f2', 'E')">Elyra Support<span class="ch-bot-badge">BOT</span></span>
+              <span class="ch-ts" title="07/09/2026, 20:03:44">20:03</span>
+            </div>
+            <div class="ch-msg-text">Please be patient and wait for a staff member to assist you with your request.</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="07/09/2026, 20:44:52">20:44</span>
+          <div class="ch-msg-text"><div class="ch-embed" style="border-left-color: #57f287"><div class="ch-embed-desc">✅ <span class="ch-mention" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')">@4r9c</span> has claimed this ticket.<br>Hello <span class="ch-mention" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">@minikanye</span>, your issue is in good hands!</div></div></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4r9c" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author staff" title="Clicca per info utente" onclick="showModal('4r9c', '4r9c', '1251606251234922622', 'https://cdn.discordapp.com/avatars/1251606251234922622/c87e7ba4ad794899522787614efd5c3c.png?size=128', '#9c27b0', '4')">4r9c</span>
+              <span class="ch-ts" title="07/09/2026, 20:45:01">20:45</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span> wait for hiim</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="07/09/2026, 21:49:38">21:49</span>
+            </div>
+            <div class="ch-msg-text">Yes purchase a key</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="07/09/2026, 21:49:53">21:49</span>
+          <div class="ch-msg-text">Then if u make media with our requirements I&#039;ll give u free keys</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="07/09/2026, 21:50:09">21:50</span>
+          <div class="ch-msg-text"><em>[Messaggio Vuoto/Componente]</em></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="07/09/2026, 21:50:14">21:50</span>
+          <div class="ch-msg-text">These are requirements</div>
+        </div><div class="ch-date-divider"><span>mercoledì 9 settembre 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="09/09/2026, 18:41:54">18:41</span>
+            </div>
+            <div class="ch-msg-text">one question do i even have to run something on my main pc driver or smth</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="09/09/2026, 19:36:03">19:36</span>
+            </div>
+            <div class="ch-msg-text">with rdma yes</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/09/2026, 19:36:15">19:36</span>
+          <div class="ch-msg-text">you open 1 time a driver and thats it</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/09/2026, 19:36:20">19:36</span>
+          <div class="ch-msg-text">signed driver</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="09/09/2026, 19:37:01">19:37</span>
+            </div>
+            <div class="ch-msg-text">mhm can you dont can give me an 1 day key and you gonna look if the video is good ?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="09/09/2026, 19:37:43">19:37</span>
+            </div>
+            <div class="ch-msg-text">we dont have day keys</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="09/09/2026, 20:12:08">20:12</span>
+            </div>
+            <div class="ch-msg-text">but i dont have money rn</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="09/09/2026, 20:12:26">20:12</span>
+            </div>
+            <div class="ch-msg-text">Then we can&#039;t proceed</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/09/2026, 20:12:31">20:12</span>
+          <div class="ch-msg-text">We don&#039;t give anything for free</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/09/2026, 20:12:48">20:12</span>
+          <div class="ch-msg-text">In case you make good media with our requirements we can gift keys after</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="09/09/2026, 20:12:52">20:12</span>
+            </div>
+            <div class="ch-msg-text">can you make me an special prize</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="09/09/2026, 20:13:02">20:13</span>
+            </div>
+            <div class="ch-msg-text">What product</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="09/09/2026, 20:13:13">20:13</span>
+            </div>
+            <div class="ch-msg-text">rdma so i dont have 50 rn</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="09/09/2026, 20:13:27">20:13</span>
+            </div>
+            <div class="ch-msg-text">38</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/09/2026, 20:13:29">20:13</span>
+          <div class="ch-msg-text">Euro</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/09/2026, 20:13:39">20:13</span>
+          <div class="ch-msg-text">For media</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="09/09/2026, 20:15:19">20:15</span>
+            </div>
+            <div class="ch-msg-text">can you send me a picture of the drivers</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="09/09/2026, 20:15:27">20:15</span>
+            </div>
+            <div class="ch-msg-text">No</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="09/09/2026, 20:17:11">20:17</span>
+            </div>
+            <div class="ch-msg-text">https://cdn.discordapp.com/attachments/1424782716465057972/1546572726100295831/3.exe?ex=6aa23fd7&amp;is=6aa0ee57&amp;hm=262365856438a1d7091b94d4246060f8daca28e8e4c54dbf615a391eb23b11c6&amp;</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/09/2026, 20:17:17">20:17</span>
+          <div class="ch-msg-text">is it like this</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="09/09/2026, 20:25:40">20:25</span>
+            </div>
+            <div class="ch-msg-text">I&#039;m not downloading anything from you</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/09/2026, 20:25:56">20:25</span>
+          <div class="ch-msg-text">I don&#039;t even use rdma myself</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="09/09/2026, 20:26:14">20:26</span>
+          <div class="ch-msg-text">So I don&#039;t know what&#039;s the driver</div>
+        </div><div class="ch-date-divider"><span>giovedì 10 settembre 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="10/09/2026, 22:26:45">22:26</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">@minikanye</span> still interested?</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="10/09/2026, 23:08:35">23:08</span>
+            </div>
+            <div class="ch-msg-text">Yes</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="10/09/2026, 23:08:43">23:08</span>
+          <div class="ch-msg-text">But let me think</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="10/09/2026, 23:09:04">23:09</span>
+            </div>
+            <div class="ch-msg-text">ok</div>
+          </div>
+        </div><div class="ch-date-divider"><span>venerdì 11 settembre 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="11/09/2026, 15:19:45">15:19</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 15:20:13">15:20</span>
+          <div class="ch-msg-text">can you give me a 12 hour key for 10 euro  only for the tournament so i can do media of i t</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="11/09/2026, 16:01:12">16:01</span>
+            </div>
+            <div class="ch-msg-text">we dont have 12 hour keys or day keys</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="11/09/2026, 16:08:48">16:08</span>
+            </div>
+            <div class="ch-msg-text">can we do 32</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 16:11:30">16:11</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="11/09/2026, 16:31:57">16:31</span>
+            </div>
+            <div class="ch-msg-text">Ok</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="11/09/2026, 16:42:53">16:42</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span> give me youre pp</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 17:34:26">17:34</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="11/09/2026, 18:14:38">18:14</span>
+            </div>
+            <div class="ch-msg-text"><strong>Accepted Payment Methods</strong> <br><br><strong>Crypto</strong>: No additional fees.<br>- <strong>LTC</strong>: <code>LWDAkJxUHgoM1qFFEvq2wECP1Hb7jV2xJd</code><br>- <strong>BTC</strong>: <code>bc1qs50gvr6r8xnjrt2rmzczpm6jmq2pjg2gq38aqm</code><br>- <strong>ETH</strong>: <code>0x96A4849774A2e14D04d32fa3Eb67B68495AfcbEE</code><br>- <strong>SOLANA</strong>: <code>8MnWHZxitwa9UVfdiUYrBKhgaer3NptXsEz8vQddz3zb</code><br><br><em></em></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 18:14:53">18:14</span>
+          <div class="ch-msg-text">https://www.eneba.com/gift-me-crypto-gift-me-crypto-gift-card-10-usd-key-global?enb<em>campaign=Main%20Search&amp;enb</em>content=search%20dropdown%20-%20products&amp;enb<em>medium=product%20card&amp;enb</em>source=https%3A%2F%2Fwww.eneba.com%2Fxbox-fortnite-polar-legends-pack-xbox-one-xbox-live-key-europe&amp;enb_term=2<div class="ch-embed" style="border-left-color: #4618ac"><div class="ch-embed-title">Buy Gift Me Crypto Gift Card 10 USD Key Cheaper!</div><div class="ch-embed-desc">Cheap Gift Me Crypto Gift Card 10 USD key. Visit Eneba and buy digital gift cards &amp; top-ups at the best price.</div></div></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 18:14:58">18:14</span>
+          <div class="ch-msg-text">Or this gift card</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="11/09/2026, 18:15:56">18:15</span>
+            </div>
+            <div class="ch-msg-text">bro i cant pay there with paypal</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="11/09/2026, 18:17:09">18:17</span>
+            </div>
+            <div class="ch-msg-text">https://www.g2a.com/gift-me-crypto-gift-card-10-usd-giftmecrypto-key-global-i10000503347008?suid=7271e98c-706b-44de-80ea-84b07753c7ad</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 18:17:32">18:17</span>
+          <div class="ch-msg-text">https://www.kinguin.net/it/category/212819/gift-me-crypto-usd-10-gift-card</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 18:17:37">18:17</span>
+          <div class="ch-msg-text">G2g or kinguin too</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="11/09/2026, 21:45:14">21:45</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 21:45:23">21:45</span>
+          <div class="ch-msg-text">gonna buy in 15 min</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 22:02:39">22:02</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('svxzyy.', 'svxzyy.', '817490799855140875', 'https://cdn.discordapp.com/avatars/817490799855140875/68333fe3642d7314d380a9c0cd72868d.png?size=128', '#9c27b0', 'S')">@svxzyy.</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 22:03:07">22:03</span>
+          <div class="ch-msg-text">do i get product instant</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="11/09/2026, 22:11:19">22:11</span>
+            </div>
+            <div class="ch-msg-text">Ok @ me when u sent</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="11/09/2026, 22:11:39">22:11</span>
+            </div>
+            <div class="ch-msg-text">do i get the product instant</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="11/09/2026, 22:11:44">22:11</span>
+            </div>
+            <div class="ch-msg-text">Yes</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="11/09/2026, 23:13:03">23:13</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">@minikanye</span></div>
+        </div><div class="ch-date-divider"><span>sabato 12 settembre 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="12/09/2026, 00:12:01">00:12</span>
+            </div>
+            <div class="ch-msg-text">my fn woofer doesn work rn  i gonna give it you let me just woof my ass</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="12/09/2026, 00:32:43">00:32</span>
+            </div>
+            <div class="ch-msg-text">Ok</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="12/09/2026, 17:25:27">17:25</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span> bro i gonna buy in like 5 hours</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="12/09/2026, 17:25:43">17:25</span>
+          <div class="ch-msg-text">but one question are  you 100 prozent sure thats its ud</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="12/09/2026, 17:29:31">17:29</span>
+            </div>
+            <div class="ch-msg-text">ofc</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="12/09/2026, 17:29:43">17:29</span>
+          <div class="ch-msg-text">if it wasnt ud the status would be different</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="12/09/2026, 17:29:45">17:29</span>
+          <div class="ch-msg-text"><span class="ch-mention" title="ID Canale: 1527322174430646353">#🛡️・status</span></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="12/09/2026, 19:43:26">19:43</span>
+            </div>
+            <div class="ch-msg-text">Yes <span class="ch-mention" title="ID Canale: 1527322174430646353">#🛡️・status</span></div>
+          </div>
+        </div><div class="ch-date-divider"><span>domenica 13 settembre 2026</span></div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="13/09/2026, 00:33:58">00:33</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 00:34:19">00:34</span>
+          <div class="ch-msg-text">okay gonna check if i am banned now i woofed when i am unbann i buy instant</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="13/09/2026, 00:34:58">00:34</span>
+            </div>
+            <div class="ch-msg-text">k</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 02:17:04">02:17</span>
+          <div class="ch-msg-text"><div class="ch-attachment"><img src="data:image/png;base64,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" alt="Image" loading="lazy" style="max-width: 100%; max-height: 400px; border-radius: 4px;"></div></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 02:17:05">02:17</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">@minikanye</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 02:17:15">02:17</span>
+          <div class="ch-msg-text">https://www.eneba.com/gift-me-crypto-gift-me-crypto-gift-card-10-usd-key-global?enb<em>campaign=Main%20Search&amp;enb</em>content=search%20dropdown%20-%20products&amp;enb<em>medium=product%20card&amp;enb</em>source=https%3A%2F%2Fwww.eneba.com%2Fxbox-fortnite-polar-legends-pack-xbox-one-xbox-live-key-europe&amp;enb_term=2<div class="ch-embed" style="border-left-color: #4618ac"><div class="ch-embed-title">Buy Gift Me Crypto Gift Card 10 USD Key Cheaper!</div><div class="ch-embed-desc">Cheap Gift Me Crypto Gift Card 10 USD key. Visit Eneba and buy digital gift cards &amp; top-ups at the best price.</div></div></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 02:17:21">02:17</span>
+          <div class="ch-msg-text">this giftcard or</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 02:17:32">02:17</span>
+          <div class="ch-msg-text">Crypto: <br>LTC: LWDAkJxUHgoM1qFFEvq2wECP1Hb7jV2xJd<br>BTC: bc1qs50gvr6r8xnjrt2rmzczpm6jmq2pjg2gq38aqm<br>ETH: 0x96A4849774A2e14D04d32fa3Eb67B68495AfcbEE<br>SOLANA: D6sp71c4CD8CBzjMsSyYZo847KaR682wxcjjf2q85RNc</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 02:17:44">02:17</span>
+          <div class="ch-msg-text">send here the code or @ me if u sent with crypto</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="13/09/2026, 02:22:45">02:22</span>
+            </div>
+            <div class="ch-msg-text">yeah i got banned  i gonna woof my 2 pc   i am sorry for the delay</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="4icy" style="background:#2196f3; background-image: url('https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">4icy</span>
+              <span class="ch-ts" title="13/09/2026, 02:23:01">02:23</span>
+            </div>
+            <div class="ch-msg-text">ok</div>
+          </div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="13/09/2026, 13:38:21">13:38</span>
+            </div>
+            <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span></div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 13:38:36">13:38</span>
+          <div class="ch-msg-text">okay   where should i send you the codes</div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 13:39:39">13:39</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('g22<em>24', 'g22</em>24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">@g22_24</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 13:39:46">13:39</span>
+          <div class="ch-msg-text">can i send you the codes</div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="g22_24" style="background:#9c27b0; background-image: url('https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author other" title="Clicca per info utente" onclick="showModal('g22_24', 'g22_24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">g22_24</span>
+              <span class="ch-ts" title="13/09/2026, 13:53:01">13:53</span>
+            </div>
+            <div class="ch-msg-text">Yes</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 13:53:36">13:53</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">@minikanye</span></div>
+        </div>
+        <div class="ch-msg-group">
+          <div class="ch-avatar" title="minikanye" style="background:#e91e63; background-image: url('https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128'); background-size: cover; cursor: pointer;" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')"></div>
+          <div class="ch-msg-body">
+            <div class="ch-msg-header">
+              <span class="ch-author owner" title="Clicca per info utente" onclick="showModal('minikanye', 'minikanye', '1291044651716841499', 'https://cdn.discordapp.com/avatars/1291044651716841499/f64b9380272403ca5ade83faa8743fd0.png?size=128', '#e91e63', 'M')">minikanye</span>
+              <span class="ch-ts" title="13/09/2026, 13:53:56">13:53</span>
+            </div>
+            <div class="ch-msg-text">you give me the product instant</div>
+          </div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 13:57:18">13:57</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('g22<em>24', 'g22</em>24', '949445942740918312', 'https://cdn.discordapp.com/avatars/949445942740918312/6403c6dbabe1a26e93b73455f731dac8.png?size=128', '#9c27b0', 'G')">@g22_24</span></div>
+        </div>
+        <div class="ch-msg-cont">
+          <span class="ch-ts-mini" title="13/09/2026, 14:15:41">14:15</span>
+          <div class="ch-msg-text"><span class="ch-mention" onclick="showModal('4icy', '4icy', '1043677410555596830', 'https://cdn.discordapp.com/avatars/1043677410555596830/5ad05341d28ee23990151589194c0c0c.png?size=128', '#2196f3', '4')">@4icy</span></div>
+        </div>
+  </div>
+
+  <div class="ch-footer">
+    Transcript generato da <strong>Elyra Support</strong>
+    &mdash; 13/09/2026, 15:28:10
+    &mdash; 97 messaggi &mdash; ID: 1546566011485036634
+  </div>
+
+  <div id="user-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-banner"></div>
+      <div class="modal-avatar-wrapper">
+        <div class="modal-avatar"><span id="modal-initial"></span><img id="modal-avatar-img" src=""></div>
+      </div>
+      <div class="modal-content-p">
+        <div class="modal-username" id="modal-username"></div>
+        <div class="modal-tag" id="modal-tag"></div>
+        <div class="modal-divider"></div>
+        <div class="modal-section">
+          <h3>ID DISCORD</h3>
+          <p id="modal-id"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showModal(username, tag, id, avatar, color, initial) {
+      document.getElementById('modal-username').innerText = username;
+      document.getElementById('modal-tag').innerText = tag;
+      document.getElementById('modal-id').innerText = id;
+      document.querySelector('.modal-banner').style.backgroundColor = color;
+      const img = document.getElementById('modal-avatar-img');
+      const initSpan = document.getElementById('modal-initial');
+      if(avatar) { img.src = avatar; img.style.display = 'block'; initSpan.style.display = 'none'; }
+      else { img.style.display = 'none'; initSpan.innerText = initial; initSpan.style.display = 'block'; document.querySelector('.modal-avatar').style.backgroundColor = color; }
+      document.getElementById('user-modal').classList.add('open');
+    }
+    function closeModal(e) {
+      if(e.target.id === 'user-modal') {
+        document.getElementById('user-modal').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>
